@@ -25,7 +25,13 @@ SECRET_KEY = "django-insecure-48v#2-bn%gdxuh1rhl&&)i0o2%9l0(m5e#re^z_rwot0ong)a2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
 ALLOWED_HOSTS = []
+
+# Permitir localhost como origem confiável para CSRF
+CSRF_TRUSTED_ORIGINS = [
+    '*',
+]
 
 
 # Application definition
@@ -38,7 +44,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "Quizzes",
-    "Results",
     "Users"
 ]
 
@@ -57,7 +62,7 @@ ROOT_URLCONF = "Quiz4FunProject.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+    "DIRS": [BASE_DIR.parent / "Frontend" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -114,12 +119,15 @@ USE_I18N = True
 USE_TZ = True
 
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_URL = "static/"
+
+# Configuração para arquivos de mídia (imagens de perfil)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
