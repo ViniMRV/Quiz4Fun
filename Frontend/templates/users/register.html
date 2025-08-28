@@ -6,6 +6,9 @@
 </head>
 <body>
     <h2>Cadastro de Usuário</h2>
+    {% if activation_sent %}
+        <p>Um e-mail de ativação foi enviado para você. Verifique sua caixa de entrada!</p>
+    {% endif %}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}

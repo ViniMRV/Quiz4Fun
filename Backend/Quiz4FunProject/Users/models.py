@@ -2,10 +2,10 @@ from django.db import models
 
 
 def user_profile_pic_path(instance, filename):
-    nome_usuario = f"{instance.first_name}{instance.last_name}".replace(" ", "")
     ext = filename.split('.')[-1]
-    filename = f"{nome_usuario.lower()}_profile_pic.{ext}"
-    return f"profile_pics/{nome_usuario}/{filename}"
+    email = instance.email.replace('@', '_at_').replace('.', '_')
+    filename = f"{email}_profile_pic.{ext}"
+    return f"profile_pics/{email}/{filename}"
 
 class User(models.Model):
     first_name = models.CharField(max_length=50)
@@ -13,6 +13,8 @@ class User(models.Model):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=128)
     profile_picture = models.ImageField(upload_to=user_profile_pic_path, blank=True, null=True)
+    is_active = models.BooleanField(default=False)
+    activation_token = models.CharField(max_length=64, blank=True, null=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
