@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.hashers import check_password as django_check_password
 
@@ -18,12 +19,20 @@ class User(models.Model):
     profile_picture = models.ImageField(upload_to=user_profile_pic_path, blank=True, null=True)
     is_active = models.BooleanField(default=False)
     activation_token = models.CharField(max_length=64, blank=True, null=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    date_joined = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
     def check_password(self, raw_password):
         return django_check_password(raw_password, self.password)
+
+    @property
+    def is_authenticated(self):
+        return True
+    
 
 class UserQuiz(models.Model):
     user = models.ForeignKey('Users.User', on_delete=models.CASCADE)
