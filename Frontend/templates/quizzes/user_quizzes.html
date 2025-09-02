@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Meus Quizzes{% endblock %}
+{% block content %}
+<h2>Meus Quizzes</h2>
+{% if quizzes %}
+    <div class="row">
+    {% for quiz in quizzes %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                {% if quiz.quiz_main_picture %}
+                <img src="{{ quiz.quiz_main_picture.url }}" class="card-img-top" alt="Imagem do Quiz">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ quiz.title }}</h5>
+                    <p class="card-text">{{ quiz.description }}</p>
+                    <p class="card-text"><small class="text-muted">Criado em {{ quiz.created_at|date:'d/m/Y' }}</small></p>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{% else %}
+    <p>Você ainda não criou nenhum quiz.</p>
+{% endif %}
+{% endblock %}

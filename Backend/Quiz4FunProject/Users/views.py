@@ -48,12 +48,12 @@ def login_user(request):
 		if form.is_valid():
 			user = form.get_user()
 			if not user.is_active:
-				return render(request, 'login.html', {'form': form, 'error': 'Conta não ativada. Verifique seu e-mail.'})
+				return render(request, 'users/login.html', {'form': form, 'error': 'Conta não ativada. Verifique seu e-mail.'})
 			login(request, user)
 			return redirect('user_status')
 	else:
 		form = AuthenticationForm()
-	return render(request, 'login.html', {'form': form})
+	return render(request, 'users/login.html', {'form': form})
 
 def logout_user(request):
 	logout(request)
