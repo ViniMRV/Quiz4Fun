@@ -1,0 +1,6 @@
+<!-- filepath: /workspaces/Quiz4Fun/Frontend/default-profile.svg -->
+<svg width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="60" cy="60" r="60" fill="#eee"/>
+  <circle cx="60" cy="50" r="30" fill="#bbb"/>
+  <ellipse cx="60" cy="100" rx="40" ry="20" fill="#bbb"/>
+</svg>
