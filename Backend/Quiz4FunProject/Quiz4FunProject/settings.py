@@ -32,11 +32,19 @@ ALLOWED_HOSTS = []
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'https://localhost:8000',
-    # Add other trusted origins as needed, e.g. 'https://yourdomain.com'
+    'http://127.0.0.1:8000',
+    'https://127.0.0.1:8000',
+    'https://solid-meme-pjjvxw5rr596cr6p7-8000.app.github.dev/',
+    'https://solid-meme-pjjvxw5rr596cr6p7-3778.app.github.dev/'
 ]
 
 
 # Application definition
+AUTHENTICATION_BACKENDS = [
+    'Users.auth.auth_backend.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+SITE_DOMAIN = "https://solid-meme-pjjvxw5rr596cr6p7-8000.app.github.dev"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
