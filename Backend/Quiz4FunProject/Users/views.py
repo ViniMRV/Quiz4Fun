@@ -64,4 +64,4 @@ def logout_user(request):
 
 @login_required(login_url='/users/login/')
 def user_status(request):
-	return render(request, 'status.html')
+	return render(request, 'users/status.html')
