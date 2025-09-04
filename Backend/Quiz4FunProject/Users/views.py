@@ -1,5 +1,3 @@
-
-
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
@@ -10,6 +8,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 import secrets
 from django.contrib.auth.hashers import make_password
+from .auth.email_auth_form import EmailAuthenticationForm
 
 def register_user(request):
 	if request.method == 'POST':
@@ -20,7 +19,7 @@ def register_user(request):
 			user.is_active = False
 			user.activation_token = secrets.token_urlsafe(32)
 			user.save()
-			activation_link = request.build_absolute_uri(f"/users/activate/{user.activation_token}/")
+			activation_link = f"{settings.SITE_DOMAIN}/users/activate/{user.activation_token}/"
 			send_mail(
 				'Ative sua conta Quiz4Fun',
 				f'Olá {user.first_name},\n\nClique no link para ativar sua conta: {activation_link}',
@@ -32,6 +31,7 @@ def register_user(request):
 	else:
 		form = UserRegistrationForm()
 	return render(request, 'users/register.html', {'form': form})
+
 def activate_user(request, token):
 	try:
 		user = User.objects.get(activation_token=token)
@@ -43,17 +43,20 @@ def activate_user(request, token):
 		return render(request, 'users/activation_failed.html')
 
 def login_user(request):
-	if request.method == 'POST':
-		form = AuthenticationForm(request, data=request.POST)
-		if form.is_valid():
-			user = form.get_user()
-			if not user.is_active:
-				return render(request, 'users/login.html', {'form': form, 'error': 'Conta não ativada. Verifique seu e-mail.'})
-			login(request, user)
-			return redirect('user_status')
-	else:
-		form = AuthenticationForm()
-	return render(request, 'users/login.html', {'form': form})
+		form = EmailAuthenticationForm(request.POST or None)
+		if request.method == 'POST':
+			if form.is_valid():
+				email = form.cleaned_data['email']
+				password = form.cleaned_data['password']
+				user = authenticate(request, email=email, password=password)
+				if user is not None:
+					if not user.is_active:
+						return render(request, 'users/login.html', {'form': form, 'error': 'Conta não ativada. Verifique seu e-mail.'})
+					login(request, user)
+					return redirect('user_status')
+				else:
+					return render(request, 'users/login.html', {'form': form, 'error': 'E-mail ou senha incorretos.'})
+		return render(request, 'users/login.html', {'form': form})
 
 def logout_user(request):
 	logout(request)
