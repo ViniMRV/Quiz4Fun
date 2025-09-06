@@ -1,4 +1,6 @@
+
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
 def user_profile_pic_path(instance, filename):
@@ -7,18 +9,14 @@ def user_profile_pic_path(instance, filename):
     filename = f"{email}_profile_pic.{ext}"
     return f"profile_pics/{email}/{filename}"
 
-class User(models.Model):
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=128)
+
+class User(AbstractUser):
     profile_picture = models.ImageField(upload_to=user_profile_pic_path, blank=True, null=True)
-    is_active = models.BooleanField(default=False)
     activation_token = models.CharField(max_length=64, blank=True, null=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-
+    
 
 class UserQuiz(models.Model):
     user = models.ForeignKey('Users.User', on_delete=models.CASCADE)
