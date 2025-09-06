@@ -1,6 +1,6 @@
-from datetime import datetime
+
 from django.db import models
-from django.contrib.auth.hashers import check_password as django_check_password
+from django.contrib.auth.models import AbstractUser
 
 
 def user_profile_pic_path(instance, filename):
@@ -9,29 +9,13 @@ def user_profile_pic_path(instance, filename):
     filename = f"{email}_profile_pic.{ext}"
     return f"profile_pics/{email}/{filename}"
 
-class User(models.Model):
-    last_login = models.DateTimeField(blank=True, null=True)
-    username = models.CharField(max_length=30, unique=True)
-    first_name = models.CharField(max_length=20)
-    last_name = models.CharField(max_length=50)
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=128)
+
+class User(AbstractUser):
     profile_picture = models.ImageField(upload_to=user_profile_pic_path, blank=True, null=True)
-    is_active = models.BooleanField(default=False)
     activation_token = models.CharField(max_length=64, blank=True, null=True)
-    is_staff = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
-    date_joined = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-
-    def check_password(self, raw_password):
-        return django_check_password(raw_password, self.password)
-
-    @property
-    def is_authenticated(self):
-        return True
     
 
 class UserQuiz(models.Model):

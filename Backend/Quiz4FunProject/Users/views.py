@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegistrationForm
 from .models import User
@@ -9,6 +8,7 @@ from django.conf import settings
 import secrets
 from django.contrib.auth.hashers import make_password
 from .auth.email_auth_form import EmailAuthenticationForm
+from django.contrib import messages
 
 def register_user(request):
 	if request.method == 'POST':
@@ -27,7 +27,8 @@ def register_user(request):
 				[user.email],
 				fail_silently=False,
 			)
-			return redirect('activation_email_sent')
+			messages.warning(request, 'Cadastro realizado! Verifique seu e-mail para ativar sua conta.')
+			return redirect('login_user')
 	else:
 		form = UserRegistrationForm()
 	return render(request, 'users/register.html', {'form': form})
@@ -38,25 +39,30 @@ def activate_user(request, token):
 		user.is_active = True
 		user.activation_token = None
 		user.save()
-		return render(request, 'users/activation_success.html')
+		messages.success(request, 'Conta ativada com sucesso! Você pode fazer login.')
+		return redirect('login_user')
 	except User.DoesNotExist:
-		return render(request, 'users/activation_failed.html')
+		messages.error(request, 'Token de ativação inválido ou expirado.')
+		return redirect('login_user')
 
 def login_user(request):
-		form = EmailAuthenticationForm(request.POST or None)
-		if request.method == 'POST':
-			if form.is_valid():
-				email = form.cleaned_data['email']
-				password = form.cleaned_data['password']
-				user = authenticate(request, email=email, password=password)
-				if user is not None:
-					if not user.is_active:
-						return render(request, 'users/login.html', {'form': form, 'error': 'Conta não ativada. Verifique seu e-mail.'})
-					login(request, user)
-					return redirect('user_status')
-				else:
-					return render(request, 'users/login.html', {'form': form, 'error': 'E-mail ou senha incorretos.'})
-		return render(request, 'users/login.html', {'form': form})
+	if request.user.is_authenticated:
+		return redirect('user_status')
+
+	form = EmailAuthenticationForm(request.POST or None)
+	if request.method == 'POST':
+		if form.is_valid():
+			email = form.cleaned_data['email']
+			password = form.cleaned_data['password']
+			user = authenticate(request, email=email, password=password)
+			if user is not None:
+				if not user.is_active:
+					return render(request, 'users/login.html', {'form': form, 'error': 'Conta não ativada. Verifique seu e-mail.'})
+				login(request, user)
+				return redirect('user_status')
+			else:
+				return render(request, 'users/login.html', {'form': form, 'error': 'E-mail ou senha incorretos.'})
+	return render(request, 'users/login.html', {'form': form})
 
 def logout_user(request):
 	logout(request)
