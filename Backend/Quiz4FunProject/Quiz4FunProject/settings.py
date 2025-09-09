@@ -28,14 +28,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-# Permitir localhost como origem confiável para CSRF
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'https://localhost:8000',
-    'http://127.0.0.1:8000',
-    'https://127.0.0.1:8000',
-    'https://solid-meme-pjjvxw5rr596cr6p7-8000.app.github.dev/',
-    'https://solid-meme-pjjvxw5rr596cr6p7-3778.app.github.dev/'
+    'http://localhost:4882',
+    'https://localhost:4882'
 ]
 
 
@@ -45,6 +42,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 SITE_DOMAIN = "https://solid-meme-pjjvxw5rr596cr6p7-8000.app.github.dev"
+AUTH_USER_MODEL = 'Users.User'
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -145,7 +143,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Carregar variáveis do .env
 load_dotenv(os.path.join(BASE_DIR.parent.parent, '.env'))
 
-# Configuração de email para recuperação de senha
 EMAIL_HOST = os.getenv('EMAIL_HOST')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
