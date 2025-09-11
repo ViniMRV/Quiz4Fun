@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>You got: {{ result.name }}</h2>
+<p>{{ result.description }}</p>
+
+{% if result.image %}
+    <img src="{{ result.image.url }}" alt="Result image" style="max-width:250px;">
+{% endif %}
+
+<p><a href="{% url 'quizzes:take_quiz' quiz.id %}">Try again</a></p>
+{% endblock %}

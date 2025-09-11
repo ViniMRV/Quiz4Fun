@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ quiz.name }}</h2>
+<p>{{ quiz.description }}</p>
+
+<form method="post">
+    {% csrf_token %}
+
+    {% for question in questions %}
+        <fieldset>
+            <legend>{{ question.text }}</legend>
+            {% if question.question_image %}
+                <img src="{{ question.question_image.url }}" alt="Question image" style="max-width:200px;">
+            {% endif %}
+
+            {% for option in question.options.all %}
+                <div>
+                    <label>
+                        <input type="radio" name="question_{{ question.id }}" value="{{ option.id }}" required>
+                        {{ option.text }}
+                        {% if option.option_image %}
+                            <img src="{{ option.option_image.url }}" alt="Option image" style="max-width:100px;">
+                        {% endif %}
+                    </label>
+                </div>
+            {% endfor %}
+        </fieldset>
+    {% endfor %}
+
+    <button type="submit">Submit Quiz</button>
+</form>
+{% endblock %}

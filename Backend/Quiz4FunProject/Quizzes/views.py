@@ -151,3 +151,33 @@ def add_questions(request, quiz_id):
         'results': quiz.results.all()
     })
 
+@login_required(login_url='/users/login/')
+def take_quiz(request, quiz_id):
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+
+    if request.method == "POST":
+        # Collect scores per result
+        scores = {result.id: 0 for result in quiz.results.all()}
+
+        for question in quiz.questions.all():
+            selected_option_id = request.POST.get(f"question_{question.id}")
+            if selected_option_id:
+                option = Option.objects.get(id=selected_option_id)
+                for option_score in option.optionscore_set.all():
+                    scores[option_score.result.id] += option_score.points
+
+        # Pick the top scoring result
+        best_result_id = max(scores, key=scores.get)
+        best_result = Result.objects.get(id=best_result_id)
+
+        return render(request, "quizzes/quiz_result.html", {
+            "quiz": quiz,
+            "result": best_result,
+            "score": scores[best_result_id],
+        })
+
+    # GET → show quiz
+    return render(request, "quizzes/take_quiz.html", {
+        "quiz": quiz,
+        "questions": quiz.questions.all()
+    })
