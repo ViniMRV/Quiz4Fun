@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Setup Quiz "{{ quiz.title }}"</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    {% if not show_questions_setup %}
+        <p>
+            <label>Number of questions (1-20):</label>
+            <input type="number" name="num_questions" min="1" max="20" value="1" required>
+        </p>
+
+        <p>
+            <label>Number of results (minimum 2):</label>
+            <input type="number" name="num_results" min="2" value="2" required>
+        </p>
+
+        <button type="submit" name="set_questions">Continue</button>
+
+    {% else %}
+        <input type="hidden" name="num_questions" value="{{ num_questions }}">
+        <input type="hidden" name="num_results" value="{{ num_results }}">
+
+        {% for q_idx in question_range %}
+            <fieldset>
+                <legend>Question {{ forloop.counter }}</legend>
+
+                <p>
+                    <label>Number of options (2-8):</label>
+                    <input type="number" name="q{{ q_idx }}_num_options" value="2" min="2" max="8" required>
+                </p>
+
+                <p>
+                    <label>Options have images?</label>
+                    <select name="q{{ q_idx }}_options_have_images">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </p>
+            </fieldset>
+        {% endfor %}
+
+        <button type="submit">Continue to Results</button>
+    {% endif %}
+</form>
+
+{% endblock %}
