@@ -1,0 +1,24 @@
+/* Forms */
+form {
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+form input, form select {
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+form button {
+    background-color: #0d6efd;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+form button:hover {
+    background-color: #0b5ed7;
+}

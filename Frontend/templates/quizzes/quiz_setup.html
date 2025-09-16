@@ -1,48 +1,55 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/quizzes.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="main-card mx-auto" style="max-width: 700px;">
-    <h3 class="mb-4 text-center">Configuração do Quiz "{{ quiz.title }}"</h3>
-    <form method="post" class="d-grid gap-3">
+<div class="setup-container">
+    <h2>Setup Quiz "{{ quiz.title }}"</h2>
+
+    <form method="post" class="card p-4">
         {% csrf_token %}
+
         {% if not show_questions_setup %}
-            <div>
-                <label class="form-label" for="num_questions">Número de perguntas:</label>
-                <input type="number" min="1" max="20" name="num_questions" id="num_questions" class="form-control border-custom" value="1" required>
+            <div class="mb-3">
+                <label class="form-label">Number of questions (1–20):</label>
+                <input type="number" name="num_questions" min="1" max="20" value="1" class="form-control" required>
             </div>
-            <div>
-                <label class="form-label" for="num_results">Número de resultados:</label>
-                <input type="number" min="2" max="10" name="num_results" id="num_results" class="form-control border-custom" value="2" required>
+
+            <div class="mb-3">
+                <label class="form-label">Number of results (min 2):</label>
+                <input type="number" name="num_results" min="2" value="2" class="form-control" required>
             </div>
-            <button type="submit" name="set_questions" class="btn btn-login w-100">Continuar</button>
+
+            <button type="submit" name="set_questions" class="btn btn-primary">Continue</button>
+
         {% else %}
             <input type="hidden" name="num_questions" value="{{ num_questions }}">
             <input type="hidden" name="num_results" value="{{ num_results }}">
+
             {% for q_idx in question_range %}
-                <div class="border-custom p-3 mb-2">
-                    <label class="form-label">Pergunta {{ forloop.counter }}</label>
-                    <div class="mb-2">
-                        <label for="q{{ q_idx }}_num_options">Opções:</label>
-                        <input type="number" min="2" max="8" name="q{{ q_idx }}_num_options" id="q{{ q_idx }}_num_options" class="form-control border-custom" value="2" required>
+                <fieldset class="question-setup">
+                    <legend>Question {{ forloop.counter }}</legend>
+
+                    <div class="mb-3">
+                        <label class="form-label">Number of options (2–8):</label>
+                        <input type="number" name="q{{ q_idx }}_num_options" value="2" min="2" max="8" class="form-control" required>
                     </div>
-                    <div>
-                        <label for="q{{ q_idx }}_options_have_images">Opções com imagem?</label>
-                        <select name="q{{ q_idx }}_options_have_images" id="q{{ q_idx }}_options_have_images" class="form-select border-custom">
-                            <option value="no">Não</option>
-                            <option value="yes">Sim</option>
+
+                    <div class="mb-3">
+                        <label class="form-label">Options have images?</label>
+                        <select name="q{{ q_idx }}_options_have_images" class="form-select">
+                            <option value="no">No</option>
+                            <option value="yes">Yes</option>
                         </select>
                     </div>
-                </div>
+                </fieldset>
             {% endfor %}
-            <button type="submit" class="btn btn-login w-100">Avançar</button>
+
+            <button type="submit" class="btn btn-success">Continue to Results</button>
         {% endif %}
     </form>
 </div>
-{% endblock %}
-            </fieldset>
-        {% endfor %}
-
-        <button type="submit">Continue to Results</button>
-    {% endif %}
-</form>
-
 {% endblock %}
