@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Editar Perfil</h2>
+<form method="post" enctype="multipart/form-data" class="edit-profile-form">
+    {% csrf_token %}
+    <div>
+        <label for="id_username">Usuário:</label>
+        {{ form.username }}
+    </div>
+    <div>
+        <label for="id_first_name">Nome:</label>
+        {{ form.first_name }}
+    </div>
+    <div>
+        <label for="id_last_name">Sobrenome:</label>
+        {{ form.last_name }}
+    </div>
+    <div>
+        <label for="id_profile_picture">Foto de Perfil:</label>
+        {{ form.profile_picture }}
+        {% if user.profile_picture %}
+            <br>
+            <img src="{{ user.profile_picture.url }}" alt="Foto de Perfil" width="120" style="margin-top:10px; border-radius: 50%; box-shadow: 0 2px 8px #aaa;">
+        {% endif %}
+    </div>
+    <button type="submit" class="btn-save">Salvar</button>
+</form>
+<style>
+.edit-profile-form {
+    max-width: 400px;
+    margin: 30px auto;
+    padding: 24px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px #e0e0e0;
+}
+.edit-profile-form label {
+    font-weight: bold;
+    margin-bottom: 4px;
+    display: block;
+}
+.edit-profile-form input[type="text"],
+.edit-profile-form input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+.btn-save {
+    background: #4f8cff;
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px #b3d1ff;
+    transition: background 0.2s;
+}
+.btn-save:hover {
+    background: #2566d6;
+}
+</style>
+{% endblock %}

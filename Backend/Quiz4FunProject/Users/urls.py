@@ -7,6 +7,7 @@ urlpatterns = [
     path('login/', views.login_user, name='login_user'),
     path('logout/', views.logout_user, name='logout_user'),
     path('status/', views.user_status, name='user_status'),
+    path('edit/', views.edit_profile, name='edit_profile'),
     path('activate/<str:token>/', views.activate_user, name='activate_user'),
     path('activation-email-sent/', lambda request: render(request, 'users/activation_email_sent.html'), name='activation_email_sent'),
 ]
