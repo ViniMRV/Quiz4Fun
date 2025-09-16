@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Add Results for "{{ quiz.title }}"</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="total_forms" id="total_forms" value="{{ forms|length }}">
+    <div id="results-container">
+        {% for form in forms %}
+            <div class="result-form">
+                {{ form.as_p }}
+            </div>
+        {% endfor %}
+    </div>
+    <button type="submit">Save Results</button>
+</form>
+{% endblock %}

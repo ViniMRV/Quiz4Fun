@@ -32,7 +32,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'https://localhost:8000',
     'http://localhost:4882',
-    'https://localhost:4882'
+    'https://localhost:4882',
+    'https://solid-meme-pjjvxw5rr596cr6p7-8000.app.github.dev'
 ]
 
 

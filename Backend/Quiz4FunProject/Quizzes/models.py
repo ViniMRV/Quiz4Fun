@@ -4,6 +4,7 @@ class Quiz(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey('Users.User', on_delete=models.CASCADE, related_name="quizzes")
     quiz_main_picture = models.ImageField(upload_to='quiz/main_images/', blank=True, null=True)
 
     def __str__(self):
