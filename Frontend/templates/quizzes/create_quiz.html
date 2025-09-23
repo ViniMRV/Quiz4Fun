@@ -1,12 +1,20 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
-<h2>Create a New Quiz</h2>
-
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save Quiz</button>
-</form>
-
+<div class="main-card mx-auto" style="max-width: 600px;">
+    <h3 class="mb-4 text-center">Criar Novo Quiz</h3>
+    <form method="post" enctype="multipart/form-data" class="d-grid gap-3">
+        {% csrf_token %}
+        {% for field in form %}
+            <div>
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="text-danger small">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-success w-100 border-custom">Criar Quiz</button>
+    </form>
+</div>
 {% endblock %}

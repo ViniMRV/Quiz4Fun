@@ -1,18 +1,23 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastro de Usuário</title>
-</head>
-<body>
-    <h2>Cadastro de Usuário</h2>
+{% extends 'base.html' %}
+{% block title %}Cadastro de Usuário{% endblock %}
+{% block content %}
+<div class="main-card mx-auto" style="max-width: 400px;">
+    <h2 class="mb-4 text-center">Cadastro de Usuário</h2>
     {% if activation_sent %}
-        <p>Um e-mail de ativação foi enviado para você. Verifique sua caixa de entrada!</p>
+        <div class="alert alert-success text-center">Um e-mail de ativação foi enviado para você. Verifique sua caixa de entrada!</div>
     {% endif %}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Cadastrar</button>
+        {% for field in form %}
+            <div class="form-group">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="text-danger small">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-login w-100">Cadastrar</button>
     </form>
-</body>
-</html>
+</div>
+{% endblock %}
