@@ -1,18 +1,22 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastro de Usuário</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Cadastro - Quiz4Fun{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/users.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="register-container">
     <h2>Cadastro de Usuário</h2>
     {% if activation_sent %}
-        <p>Um e-mail de ativação foi enviado para você. Verifique sua caixa de entrada!</p>
+        <p class="alert alert-info">Um e-mail de ativação foi enviado para você. Verifique sua caixa de entrada!</p>
     {% endif %}
-    <form method="post" enctype="multipart/form-data">
+
+    <form method="post" enctype="multipart/form-data" class="card p-3 shadow-sm" novalidate>
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Cadastrar</button>
+        <button type="submit" class="btn btn-primary">Cadastrar</button>
     </form>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -11,8 +11,9 @@ def user_profile_pic_path(instance, filename):
 
 
 class User(AbstractUser):
-    profile_picture = models.ImageField(upload_to=user_profile_pic_path, blank=True, null=True)
     activation_token = models.CharField(max_length=64, blank=True, null=True)
+    email = models.EmailField(unique=True)
+    profile_picture = models.ImageField(upload_to=user_profile_pic_path, blank=True, null=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
