@@ -1,21 +1,52 @@
-/* Forms */
-form {
-    max-width: 450px;
-    margin: 0 auto;
+
+.register-container {
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    min-height: 80vh; 
+    text-align: center; 
 }
+
+
+form {
+    max-width: 450px; 
+    width: 100%; 
+    margin-top: 20px; 
+    text-align: left; 
+}
+
+
+form p {
+    margin-bottom: 15px; 
+}
+
+
+form label {
+    display: block; 
+    margin-bottom: 5px; 
+    font-weight: bold;
+}
+
 
 form input, form select {
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 12px;
+    width: 100%; 
+    padding: 8px 12px; 
+    border: 1px solid #ccc;
+    border-radius: 5px; 
+    box-sizing: border-box; 
 }
 
+
 form button {
+    width: 100%; 
     background-color: #0d6efd;
+    color: white; 
     border: none;
     border-radius: 8px;
-    padding: 10px;
+    padding: 12px; 
     font-weight: bold;
+    cursor: pointer; 
     transition: 0.3s;
 }
 
