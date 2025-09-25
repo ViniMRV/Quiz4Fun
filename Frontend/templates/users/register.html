@@ -7,14 +7,16 @@
 {% endblock %}
 
 {% block content %}
-<h2>Cadastro de Usuário</h2>
-{% if activation_sent %}
-    <p class="alert alert-info">Um e-mail de ativação foi enviado para você. Verifique sua caixa de entrada!</p>
-{% endif %}
+<div class="register-container">
+    <h2>Cadastro de Usuário</h2>
+    {% if activation_sent %}
+        <p class="alert alert-info">Um e-mail de ativação foi enviado para você. Verifique sua caixa de entrada!</p>
+    {% endif %}
 
-<form method="post" enctype="multipart/form-data" class="card p-3 shadow-sm" novalidate>
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Cadastrar</button>
-</form>
+    <form method="post" enctype="multipart/form-data" class="card p-3 shadow-sm" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Cadastrar</button>
+    </form>
+</div>
 {% endblock %}
