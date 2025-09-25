@@ -15,14 +15,18 @@ SECRET_KEY = "django-insecure-48v#2-bn%gdxuh1rhl&&)i0o2%9l0(m5e#re^z_rwot0ong)a2
 DEBUG = True
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".github.dev",
+]
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:8000',
-    'https://localhost:8000',
-    'http://localhost:4882',
-    'https://localhost:4882',
-    'https://solid-meme-pjjvxw5rr596cr6p7-8000.app.github.dev'
+    "http://localhost:8000",
+    "https://localhost:8000",
+    "http://localhost:4882",
+    "https://localhost:4882",
+    "https://*.github.dev",
 ]
 
 
