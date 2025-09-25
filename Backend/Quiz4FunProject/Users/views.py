@@ -23,29 +23,35 @@ import secrets
 from django.contrib.auth.hashers import make_password
 from .auth.email_auth_form import EmailAuthenticationForm
 from django.contrib import messages
+from django.db import IntegrityError
 
 def register_user(request):
-	if request.method == 'POST':
-		form = UserRegistrationForm(request.POST, request.FILES)
-		if form.is_valid():
-			user = form.save(commit=False)
-			user.password = make_password(form.cleaned_data['password'])
-			user.is_active = False
-			user.activation_token = secrets.token_urlsafe(32)
-			user.save()
-			activation_link = f"{settings.SITE_DOMAIN}/users/activate/{user.activation_token}/"
-			send_mail(
-				'Ative sua conta Quiz4Fun',
-				f'Olá {user.first_name},\n\nClique no link para ativar sua conta: {activation_link}',
-				settings.DEFAULT_FROM_EMAIL,
-				[user.email],
-				fail_silently=False,
-			)
-			messages.warning(request, 'Cadastro realizado! Verifique seu e-mail para ativar sua conta.')
-			return redirect('login_user')
-	else:
-		form = UserRegistrationForm()
-	return render(request, 'users/register.html', {'form': form})
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                user = form.save(commit=False)
+                user.password = make_password(form.cleaned_data['password'])
+                user.is_active = False
+                user.activation_token = secrets.token_urlsafe(32)
+                user.save()
+                activation_link = f"{settings.SITE_DOMAIN}/users/activate/{user.activation_token}/"
+                send_mail(
+                    'Ative sua conta Quiz4Fun',
+                    f'Olá {user.first_name},\n\nClique no link para ativar sua conta: {activation_link}',
+                    settings.DEFAULT_FROM_EMAIL,
+                    [user.email],
+                    fail_silently=False,
+                )
+                messages.warning(request, 'Cadastro realizado! Verifique seu e-mail para ativar sua conta.')
+                return redirect('login_user')
+            except IntegrityError:
+                messages.error(request, "Este e-mail já está em uso.")
+        else:
+            messages.error(request, "Por favor, corrija os erros abaixo.")
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'users/register.html', {'form': form})
 
 def activate_user(request, token):
 	try:
