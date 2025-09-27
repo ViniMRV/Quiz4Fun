@@ -1,0 +1,25 @@
+.login-container {
+    max-width: 400px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 32px 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    text-align: center;
+}
+.login-container h2 {
+    margin-bottom: 24px;
+    color: #2c3e50;
+}
+.login-container .btn-primary {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1em;
+}
+.login-container a {
+    color: #3498db;
+    text-decoration: none;
+}
+.login-container a:hover {
+    text-decoration: underline;
+}
