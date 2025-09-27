@@ -200,3 +200,8 @@ def quiz_result(request, quiz_id):
         'quiz': quiz,
         'user_result': user_result,
     })
+
+@login_required(login_url='/users/login/')
+def quiz_list(request):
+    quizzes = Quiz.objects.all().select_related("created_by")
+    return render(request, "quizzes/quiz_list.html", {"quizzes": quizzes})
