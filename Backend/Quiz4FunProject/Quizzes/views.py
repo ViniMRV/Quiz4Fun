@@ -4,6 +4,7 @@ from .forms import *
 from django.shortcuts import get_object_or_404
 from .models import *
 from django.forms import modelform_factory
+from Users.models import UserQuizResult
 
 @login_required(login_url='/users/login/')
 def create_quiz(request):
@@ -151,3 +152,51 @@ def add_questions(request, quiz_id):
         'results': quiz.results.all()
     })
 
+@login_required(login_url='/users/login/')
+def take_quiz(request, quiz_id):
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+
+    # Check if user already took this quiz
+    existing_result = UserQuizResult.objects.filter(user=request.user, quiz=quiz).first()
+    if existing_result:
+        return redirect('quizzes:quiz_result', quiz_id=quiz.id)
+
+    if request.method == 'POST':
+        # Collect answers
+        selected_options = []
+        for question in quiz.questions.all():
+            option_id = request.POST.get(f'question_{question.id}')
+            if option_id:
+                selected_options.append(int(option_id))
+
+        # Calculate scores
+        result_scores = {r.id: 0 for r in quiz.results.all()}
+        for option_id in selected_options:
+            option = Option.objects.get(id=option_id)
+            for score in option.scores.all():
+                result_scores[score.result.id] += score.points
+
+        # Pick top result
+        best_result_id = max(result_scores, key=result_scores.get)
+        best_result = Result.objects.get(id=best_result_id)
+
+        # Save user result
+        UserQuizResult.objects.create(user=request.user, quiz=quiz, result=best_result)
+
+        return redirect('quizzes:quiz_result', quiz_id=quiz.id)
+
+    return render(request, 'quizzes/take_quiz.html', {
+        'quiz': quiz,
+        'questions': quiz.questions.all(),
+    })
+
+
+@login_required(login_url='/users/login/')
+def quiz_result(request, quiz_id):
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    user_result = get_object_or_404(UserQuizResult, user=request.user, quiz=quiz)
+
+    return render(request, 'quizzes/quiz_result.html', {
+        'quiz': quiz,
+        'user_result': user_result,
+    })
