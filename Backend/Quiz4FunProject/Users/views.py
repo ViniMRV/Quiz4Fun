@@ -10,6 +10,8 @@ from django.contrib.auth.hashers import make_password
 from .auth.email_auth_form import EmailAuthenticationForm
 from django.contrib import messages
 from django.db import IntegrityError
+from django.contrib.auth import views as auth_views
+from django.urls import reverse_lazy
 
 def register_user(request):
     if request.method == 'POST':
@@ -30,7 +32,7 @@ def register_user(request):
                     fail_silently=False,
                 )
                 messages.warning(request, 'Cadastro realizado! Verifique seu e-mail para ativar sua conta.')
-                return redirect('login_user')
+                return redirect('users:login_user')
             except IntegrityError:
                 messages.error(request, "Este e-mail já está em uso.")
         else:
@@ -46,14 +48,14 @@ def activate_user(request, token):
 		user.activation_token = None
 		user.save()
 		messages.success(request, 'Conta ativada com sucesso! Você pode fazer login.')
-		return redirect('login_user')
+		return redirect('users:login_user')
 	except User.DoesNotExist:
 		messages.error(request, 'Token de ativação inválido ou expirado.')
-		return redirect('login_user')
+		return redirect('users:login_user')
 
 def login_user(request):
 	if request.user.is_authenticated:
-		return redirect('user_status')
+		return redirect('users:user_status')
 
 	form = EmailAuthenticationForm(request.POST or None)
 	if request.method == 'POST':
@@ -65,15 +67,30 @@ def login_user(request):
 				if not user.is_active:
 					return render(request, 'users/login.html', {'form': form, 'error': 'Conta não ativada. Verifique seu e-mail.'})
 				login(request, user)
-				return redirect('user_status')
+				return redirect('users:user_status')
 			else:
 				return render(request, 'users/login.html', {'form': form, 'error': 'E-mail ou senha incorretos.'})
 	return render(request, 'users/login.html', {'form': form})
 
 def logout_user(request):
 	logout(request)
-	return redirect('login_user')
+	return redirect('users:login_user')
 
 @login_required(login_url='/users/login/')
 def user_status(request):
 	return render(request, 'users/status.html')
+
+class UserPasswordResetView(auth_views.PasswordResetView):
+    template_name = "users/password_reset.html"
+    email_template_name = "users/password_reset_email.html"
+    success_url = reverse_lazy("users:password_reset_done")
+
+class UserPasswordResetDoneView(auth_views.PasswordResetDoneView):
+    template_name = "users/password_reset_done.html"
+
+class UserPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    template_name = "users/password_reset_confirm.html"
+    success_url = reverse_lazy("users:password_reset_complete")
+
+class UserPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
+    template_name = "users/password_reset_complete.html"
