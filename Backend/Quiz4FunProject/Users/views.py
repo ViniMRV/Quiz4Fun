@@ -54,23 +54,23 @@ def activate_user(request, token):
 		return redirect('users:login_user')
 
 def login_user(request):
-	if request.user.is_authenticated:
-		return redirect('users:user_status')
+    if request.user.is_authenticated:
+        return redirect('quizzes:quiz_menu')
 
-	form = EmailAuthenticationForm(request.POST or None)
-	if request.method == 'POST':
-		if form.is_valid():
-			email = form.cleaned_data['email']
-			password = form.cleaned_data['password']
-			user = authenticate(request, email=email, password=password)
-			if user is not None:
-				if not user.is_active:
-					return render(request, 'users/login.html', {'form': form, 'error': 'Conta não ativada. Verifique seu e-mail.'})
-				login(request, user)
-				return redirect('users:user_status')
-			else:
-				return render(request, 'users/login.html', {'form': form, 'error': 'E-mail ou senha incorretos.'})
-	return render(request, 'users/login.html', {'form': form})
+    form = EmailAuthenticationForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            user = authenticate(request, email=email, password=password)
+            if user is not None:
+                if not user.is_active:
+                    return render(request, 'users/login.html', {'form': form, 'error': 'Conta não ativada. Verifique seu e-mail.'})
+                login(request, user)
+                return redirect('quizzes:quiz_menu')
+            else:
+                return render(request, 'users/login.html', {'form': form, 'error': 'E-mail ou senha incorretos.'})
+    return render(request, 'users/login.html', {'form': form})
 
 def logout_user(request):
 	logout(request)

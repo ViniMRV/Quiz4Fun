@@ -7,6 +7,14 @@ from django.forms import modelform_factory
 from Users.models import UserQuizResult
 
 @login_required(login_url='/users/login/')
+def user_quizzes(request):
+    quizzes = request.user.quizzes.all()
+    return render(request, 'quizzes/quiz_list.html', {'quizzes': quizzes})
+@login_required(login_url='/users/login/')
+def quiz_menu(request):
+    return render(request, 'quizzes/quiz_menu.html')
+
+@login_required(login_url='/users/login/')
 def create_quiz(request):
     if request.method == 'POST':
         form = QuizForm(request.POST, request.FILES)

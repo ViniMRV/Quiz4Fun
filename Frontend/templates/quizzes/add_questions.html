@@ -1,21 +1,22 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends 'base_quiz.html' %}
+{% load static %}
+{% block title %}Adicionar Perguntas - Quiz4Fun{% endblock %}
+{% block head %}
+    {{ block.super }}
+{% endblock %}
+{% block quiz_content %}
 <h2>Add Questions for Quiz "{{ quiz.title }}"</h2>
-
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-
     {% for question in questions_with_options %}
         <fieldset>
             <legend>Question {{ forloop.counter }}</legend>
             {{ question.q_form.as_p }}
-
             <h4>Options:</h4>
             {% for opt_form in question.options %}
                 <div>
                     <strong>Option {{ forloop.counter }}:</strong>
                     {{ opt_form.as_p }}
-
                     {% for result in results %}
                         <label>Points for result "{{ result.name }}":</label>
                         <input type="number" name="q{{ forloop.parentloop.counter0 }}_opt{{ forloop.counter0 }}_points_{{ result.id }}" value="0" min="0">
@@ -24,8 +25,6 @@
             {% endfor %}
         </fieldset>
     {% endfor %}
-
     <button type="submit">Finish Quiz</button>
 </form>
-
 {% endblock %}

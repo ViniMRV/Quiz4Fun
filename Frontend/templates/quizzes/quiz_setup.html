@@ -3,53 +3,61 @@
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/quizzes.css' %}">
-{% endblock %}
-
 {% block content %}
-<div class="setup-container">
-    <h2>Setup Quiz "{{ quiz.title }}"</h2>
-
-    <form method="post" class="card p-4">
-        {% csrf_token %}
-
-        {% if not show_questions_setup %}
-            <div class="mb-3">
-                <label class="form-label">Number of questions (1–20):</label>
-                <input type="number" name="num_questions" min="1" max="20" value="1" class="form-control" required>
+<div style="position: relative;">
+    {% if request.user.is_authenticated %}
+    <div style="position: absolute; top: 0; right: 0; z-index: 10;">
+        <div class="dropdown">
+            <button class="btn btn-primary rounded-circle" type="button" id="logoutMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="width:48px; height:48px; display:flex; align-items:center; justify-content:center; font-size:1.5em;">
+                <span class="bi bi-person"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="logoutMenuButton">
+                <li><a class="dropdown-item" href="{% url 'users:logout_user' %}">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+    <div class="setup-container">
+        <h2>Setup Quiz "{{ quiz.title }}"</h2>
+        <form method="post" class="card p-4">
+            {% extends 'base_quiz.html' %}
+            {% load static %}
+            {% block title %}Configurar Quiz - Quiz4Fun{% endblock %}
+            {% block head %}
+                <link rel="stylesheet" href="{% static 'css/quizzes.css' %}">
+                {{ block.super }}
+            {% endblock %}
+            {% block quiz_content %}
+            <div class="setup-container">
+                <h2>Setup Quiz "{{ quiz.title }}"</h2>
+                <form method="post" class="card p-4">
+                    {% csrf_token %}
+                    {% if not show_questions_setup %}
+                        <div class="mb-3">
+                            <label class="form-label">Number of questions (1–20):</label>
+                            <input type="number" name="num_questions" min="1" max="20" value="1" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Number of results (min 2):</label>
+                            <input type="number" name="num_results" min="2" value="2" class="form-control" required>
+                        </div>
+                        <button type="submit" name="set_questions" class="btn btn-primary">Continue</button>
+                    {% else %}
+                        <input type="hidden" name="num_questions" value="{{ num_questions }}">
+                        <input type="hidden" name="num_results" value="{{ num_results }}">
+                        {% for q_idx in question_range %}
+                            <fieldset class="question-setup">
+                                <legend>Question {{ forloop.counter }}</legend>
+                                <div class="mb-3">
+                                    <label class="form-label">Number of options (2–8):</label>
+                                    <input type="number" name="q{{ q_idx }}_num_options" value="2" min="2" max="8" class="form-control" required>
+                                </div>
+                                ...existing code...
+                            </fieldset>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-success">Continue to Results</button>
+                    {% endif %}
+                </form>
             </div>
+            {% endblock %}
 
-            <div class="mb-3">
-                <label class="form-label">Number of results (min 2):</label>
-                <input type="number" name="num_results" min="2" value="2" class="form-control" required>
-            </div>
-
-            <button type="submit" name="set_questions" class="btn btn-primary">Continue</button>
-
-        {% else %}
-            <input type="hidden" name="num_questions" value="{{ num_questions }}">
-            <input type="hidden" name="num_results" value="{{ num_results }}">
-
-            {% for q_idx in question_range %}
-                <fieldset class="question-setup">
-                    <legend>Question {{ forloop.counter }}</legend>
-
-                    <div class="mb-3">
-                        <label class="form-label">Number of options (2–8):</label>
-                        <input type="number" name="q{{ q_idx }}_num_options" value="2" min="2" max="8" class="form-control" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Options have images?</label>
-                        <select name="q{{ q_idx }}_options_have_images" class="form-select">
-                            <option value="no">No</option>
-                            <option value="yes">Yes</option>
-                        </select>
-                    </div>
-                </fieldset>
-            {% endfor %}
-
-            <button type="submit" class="btn btn-success">Continue to Results</button>
-        {% endif %}
-    </form>
-</div>
-{% endblock %}

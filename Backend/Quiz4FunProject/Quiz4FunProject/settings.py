@@ -28,6 +28,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://localhost:4882",
     'http://solid-meme-pjjvxw5rr596cr6p7-8000.app.github.dev',
     "https://*.github.dev",
+    "https://improved-space-pancake-7v75jgjjx5r9hgjv-8000.app.github.dev",
+    "http://improved-space-pancake-7v75jgjjx5r9hgjv-8000.app.github.dev",
 ]
 
 

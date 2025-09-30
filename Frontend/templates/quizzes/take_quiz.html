@@ -1,8 +1,12 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends 'base_quiz.html' %}
+{% load static %}
+{% block title %}Responder Quiz - Quiz4Fun{% endblock %}
+{% block head %}
+    {{ block.super }}
+{% endblock %}
+{% block quiz_content %}
 <h2>{{ quiz.title }}</h2>
 <p>{{ quiz.description }}</p>
-
 <form method="post">
     {% csrf_token %}
     {% for question in questions %}
@@ -11,7 +15,6 @@
             {% if question.question_image %}
                 <img src="{{ question.question_image.url }}" alt="Question Image" style="max-width:200px">
             {% endif %}
-
             {% for option in question.options.all %}
                 <label>
                     <input type="radio" name="question_{{ question.id }}" value="{{ option.id }}" required>
@@ -23,7 +26,6 @@
             {% endfor %}
         </fieldset>
     {% endfor %}
-
     <button type="submit">Submit Quiz</button>
 </form>
 {% endblock %}

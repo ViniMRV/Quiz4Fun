@@ -1,0 +1,14 @@
+{% extends 'base_quiz.html' %}
+{% load static %}
+{% block title %}Menu de Quizzes - Quiz4Fun{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    {{ block.super }}
+{% endblock %}
+{% block quiz_content %}
+<div class="login-container">
+    <h2>Menu de Quizzes</h2>
+    <a href="{% url 'quizzes:create_quiz' %}" class="btn btn-primary" style="margin-bottom: 16px; color: #fff;">Criar novo quiz</a>
+    <a href="{% url 'quizzes:user_quizzes' %}" class="btn btn-primary" style="color: #fff;">Ver meus quizzes</a>
+</div>
+{% endblock %}

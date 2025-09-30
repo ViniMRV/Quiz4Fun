@@ -1,18 +1,21 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends 'base_quiz.html' %}
+{% load static %}
+{% block title %}Quizzes Disponíveis - Quiz4Fun{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    {{ block.super }}
+{% endblock %}
+{% block quiz_content %}
 <h2>Quizzes Disponíveis</h2>
-
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
     {% for quiz in quizzes %}
         <div style="border: 1px solid #ddd; border-radius: 10px; padding: 15px; background: #f9f9f9;">
             {% if quiz.quiz_main_picture %}
                 <img src="{{ quiz.quiz_main_picture.url }}" alt="{{ quiz.title }}" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px;">
             {% endif %}
-            
             <h3>{{ quiz.title }}</h3>
             <p>{{ quiz.description|truncatewords:25 }}</p>
             <p><strong>Criado por:</strong> {{ quiz.created_by.username }}</p>
-
             <a href="{% url 'quizzes:take_quiz' quiz.id %}" 
                style="display: inline-block; padding: 10px 15px; background: #007bff; color: white; border-radius: 5px; text-decoration: none;">
                Fazer Quiz

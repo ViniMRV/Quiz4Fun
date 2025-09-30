@@ -1,7 +1,11 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends 'base_quiz.html' %}
+{% load static %}
+{% block title %}Adicionar Resultados - Quiz4Fun{% endblock %}
+{% block head %}
+    {{ block.super }}
+{% endblock %}
+{% block quiz_content %}
 <h2>Add Results for "{{ quiz.title }}"</h2>
-
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="hidden" name="total_forms" id="total_forms" value="{{ forms|length }}">

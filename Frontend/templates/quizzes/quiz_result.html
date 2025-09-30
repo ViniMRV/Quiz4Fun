@@ -1,10 +1,13 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends 'base_quiz.html' %}
+{% load static %}
+{% block title %}Resultado do Quiz - Quiz4Fun{% endblock %}
+{% block head %}
+    {{ block.super }}
+{% endblock %}
+{% block quiz_content %}
 <h2>Resultado do Quiz: {{ quiz.title }}</h2>
-
 <h3>{{ user_result.result.name }}</h3>
 <p>{{ user_result.result.description }}</p>
-
 {% if user_result.result.result_image %}
     <img src="{{ user_result.result.result_image.url }}" alt="Result Image" style="max-width:300px">
 {% endif %}

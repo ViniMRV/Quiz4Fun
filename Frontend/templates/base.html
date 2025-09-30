@@ -10,9 +10,10 @@
 	{% block head %}{% endblock %}
 </head>
 <body>
-	<header class="bg-primary text-white p-3 mb-4">
-		<div class="container">
+	<header class="bg-primary text-white p-3 mb-4" style="position: relative;">
+		<div class="container" style="position: relative;">
 			<h1>Quiz4Fun</h1>
+			{% block quiz_header %}{% endblock %}
 		</div>
 	</header>
 	<main class="container">

@@ -1,12 +1,15 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends 'base_quiz.html' %}
+{% load static %}
+{% block title %}Criar Novo Quiz - Quiz4Fun{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    {{ block.super }}
+{% endblock %}
+{% block quiz_content %}
 <h2>Create a New Quiz</h2>
-
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Save Quiz</button>
 </form>
-
 {% endblock %}
