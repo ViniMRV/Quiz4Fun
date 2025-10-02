@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_quiz.html" %}
 {% load static %}
 
 {% block head %}
@@ -20,7 +20,7 @@
     <div class="setup-container">
         <h2>Setup Quiz "{{ quiz.title }}"</h2>
         <form method="post" class="card p-4">
-            {% extends 'base_quiz.html' %}
+            {% extends "base_quiz.html" %}
             {% load static %}
             {% block title %}Configurar Quiz - Quiz4Fun{% endblock %}
             {% block head %}
