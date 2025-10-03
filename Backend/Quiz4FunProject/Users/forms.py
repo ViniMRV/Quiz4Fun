@@ -1,5 +1,7 @@
 from django import forms
 from .models import User
+from django.conf import settings
+from django.contrib.auth.forms import PasswordResetForm
 
 class UserRegistrationForm(forms.ModelForm):
     username = forms.CharField(
@@ -52,3 +54,30 @@ class UserRegistrationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+class CustomPasswordResetForm(PasswordResetForm):
+    def save(self, domain_override=None, subject_template_name=None,
+             email_template_name=None, use_https=False, token_generator=None,
+             from_email=None, request=None, html_email_template_name=None,
+             extra_email_context=None):
+        # Force your GitHub Codespaces domain
+        domain_override = settings.SITE_DOMAIN
+        use_https = True  # always https
+
+        # Inject subject directly as string
+        subject_template_name = None
+        self.subject = "Redefinição de senha - Quiz4Fun"
+
+        return super().save(
+            domain_override=domain_override,
+            subject_template_name=subject_template_name,
+            email_template_name=email_template_name,
+            use_https=use_https,
+            token_generator=token_generator,
+            from_email=from_email,
+            request=request,
+            html_email_template_name=html_email_template_name,
+            extra_email_context=extra_email_context,
+        )
+    
+    
