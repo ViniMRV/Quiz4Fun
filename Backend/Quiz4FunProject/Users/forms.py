@@ -2,6 +2,11 @@ from django import forms
 from .models import User
 
 class UserRegistrationForm(forms.ModelForm):
+    """
+    Formulário para cadastro de usuário.
+    Permite criar um novo usuário, incluindo validações customizadas e campo de foto de perfil.
+    Herda de ModelForm do Django.
+    """
     username = forms.CharField(
         max_length=30,
         label="Nome de usuário",
@@ -47,6 +52,15 @@ class UserRegistrationForm(forms.ModelForm):
         fields = ['username', 'first_name', 'last_name', 'email', 'password', 'profile_picture']
 
     def save(self, commit=True):
+        """
+        Salva o usuário criado pelo formulário, usando senha criptografada.
+        Sobrescreve o método save para garantir que a senha seja armazenada de forma segura.
+
+        :param commit: Indica se o usuário deve ser salvo imediatamente no banco de dados.
+        :type commit: bool
+        :return: Instância do usuário criada pelo formulário.
+        :rtype: Users.User
+        """
         user = super().save(commit=False)
         user.set_password(self.cleaned_data['password'])
         if commit:

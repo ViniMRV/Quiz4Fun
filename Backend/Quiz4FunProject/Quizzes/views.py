@@ -8,14 +8,36 @@ from Users.models import UserQuizResult
 
 @login_required(login_url='/users/login/')
 def user_quizzes(request):
+    """
+    Exibe os quizzes do usuário logado.
+
+    :param request: HttpRequest com usuário autenticado.
+    :return: HttpResponse com a lista de quizzes.
+    """
     quizzes = request.user.quizzes.all()
     return render(request, 'quizzes/quiz_list.html', {'quizzes': quizzes})
 @login_required(login_url='/users/login/')
 def quiz_menu(request):
+    """
+    Exibe o menu principal de quizzes.
+
+    :param request: HttpRequest com usuário autenticado.
+    :return: HttpResponse com o menu de quizzes.
+    """
     return render(request, 'quizzes/quiz_menu.html')
 
 @login_required(login_url='/users/login/')
 def create_quiz(request):
+    """
+    Lida com a criação de um novo quiz. 
+    Se for uma requisição POST, valida e salva o formulário, vinculando o quiz ao usuário logado.
+    Caso contrário, exibe o formulário vazio.
+
+    :param request: Objeto HttpRequest que contém os dados da requisição (POST ou GET).
+    :type request: django.http.HttpRequest
+    :return: HttpResponse com o formulário renderizado ou HttpResponseRedirect para a configuração do quiz.
+    :rtype: django.http.HttpResponse ou django.http.HttpResponseRedirect
+    """
     if request.method == 'POST':
         form = QuizForm(request.POST, request.FILES)
         if form.is_valid():
@@ -29,6 +51,18 @@ def create_quiz(request):
 
 @login_required(login_url='/users/login/')
 def quiz_setup(request, quiz_id):
+    """
+    Lida com a configuração de perguntas e resultados de um quiz.
+    Se for uma requisição POST, processa os dados do formulário e salva a configuração.
+    Caso contrário, exibe o formulário de configuração inicial.
+
+    :param request: Objeto HttpRequest que contém os dados da requisição (POST ou GET).
+    :type request: django.http.HttpRequest
+    :param quiz_id: ID do quiz a ser configurado.
+    :type quiz_id: int
+    :return: HttpResponse com o formulário renderizado ou HttpResponseRedirect para adicionar resultados.
+    :rtype: django.http.HttpResponse ou django.http.HttpResponseRedirect
+    """
     quiz = get_object_or_404(Quiz, id=quiz_id, created_by=request.user)
 
     if request.method == 'POST':
@@ -76,6 +110,18 @@ def quiz_setup(request, quiz_id):
 
 @login_required(login_url='/users/login/')
 def add_results(request, quiz_id):
+    """
+    Lida com a adição de resultados ao quiz.
+    Se for uma requisição POST, valida e salva os resultados, redirecionando para adicionar perguntas.
+    Caso contrário, exibe o formulário para cada resultado.
+
+    :param request: Objeto HttpRequest que contém os dados da requisição (POST ou GET).
+    :type request: django.http.HttpRequest
+    :param quiz_id: ID do quiz.
+    :type quiz_id: int
+    :return: HttpResponse com o formulário renderizado ou HttpResponseRedirect para adicionar perguntas.
+    :rtype: django.http.HttpResponse ou django.http.HttpResponseRedirect
+    """
     quiz = get_object_or_404(Quiz, id=quiz_id, created_by=request.user)
     setup = request.session.get(f'quiz_{quiz_id}_setup')
     num_results = setup.get('num_results', 2)
@@ -97,6 +143,18 @@ def add_results(request, quiz_id):
 
 @login_required(login_url='/users/login/')
 def add_questions(request, quiz_id):
+    """
+    Lida com a adição de perguntas e opções ao quiz.
+    Se for uma requisição POST, valida e salva perguntas, opções e pontuações, finalizando a criação do quiz.
+    Caso contrário, exibe os formulários para cada pergunta e suas opções.
+
+    :param request: Objeto HttpRequest que contém os dados da requisição (POST ou GET).
+    :type request: django.http.HttpRequest
+    :param quiz_id: ID do quiz.
+    :type quiz_id: int
+    :return: HttpResponse com o formulário renderizado ou HttpResponseRedirect para finalizar o quiz.
+    :rtype: django.http.HttpResponse ou django.http.HttpResponseRedirect
+    """
     quiz = get_object_or_404(Quiz, id=quiz_id, created_by=request.user)
     setup = request.session.get(f'quiz_{quiz_id}_setup')
 
@@ -162,6 +220,18 @@ def add_questions(request, quiz_id):
 
 @login_required(login_url='/users/login/')
 def take_quiz(request, quiz_id):
+    """
+    Lida com a participação do usuário em um quiz.
+    Se for uma requisição POST, calcula o resultado e salva a resposta do usuário, redirecionando para a página de resultado.
+    Caso contrário, exibe as perguntas do quiz para o usuário responder.
+
+    :param request: Objeto HttpRequest que contém os dados da requisição (POST ou GET).
+    :type request: django.http.HttpRequest
+    :param quiz_id: ID do quiz.
+    :type quiz_id: int
+    :return: HttpResponse com o formulário renderizado ou HttpResponseRedirect para o resultado.
+    :rtype: django.http.HttpResponse ou django.http.HttpResponseRedirect
+    """
     quiz = get_object_or_404(Quiz, id=quiz_id)
 
     # Check if user already took this quiz
@@ -201,6 +271,17 @@ def take_quiz(request, quiz_id):
 
 @login_required(login_url='/users/login/')
 def quiz_result(request, quiz_id):
+    """
+    Exibe o resultado do quiz para o usuário logado.
+    Renderiza a página de resultado do quiz para o usuário.
+
+    :param request: Objeto HttpRequest que contém os dados da requisição.
+    :type request: django.http.HttpRequest
+    :param quiz_id: ID do quiz.
+    :type quiz_id: int
+    :return: HttpResponse com o resultado do quiz.
+    :rtype: django.http.HttpResponse
+    """
     quiz = get_object_or_404(Quiz, id=quiz_id)
     user_result = get_object_or_404(UserQuizResult, user=request.user, quiz=quiz)
 
