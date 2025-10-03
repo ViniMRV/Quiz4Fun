@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegistrationForm
+from .forms import UserRegistrationForm, CustomPasswordResetForm
 from .models import User
 from django.core.mail import send_mail
 from django.conf import settings
@@ -85,12 +85,26 @@ class UserPasswordResetView(auth_views.PasswordResetView):
     email_template_name = "users/password_reset_email.html"
     success_url = reverse_lazy("users:password_reset_done")
 
+    def form_valid(self, form):
+        form.save(
+            use_https=self.request.is_secure(),
+            from_email=self.from_email,
+            email_template_name=self.email_template_name,
+            request=self.request,
+            html_email_template_name=self.html_email_template_name,
+            extra_email_context=self.extra_email_context,
+            domain_override=settings.SITE_DOMAIN.replace("https://", "").replace("http://", ""),
+        )
+        return redirect(self.success_url)
+
 class UserPasswordResetDoneView(auth_views.PasswordResetDoneView):
     template_name = "users/password_reset_done.html"
+
 
 class UserPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
     template_name = "users/password_reset_confirm.html"
     success_url = reverse_lazy("users:password_reset_complete")
+
 
 class UserPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
     template_name = "users/password_reset_complete.html"
