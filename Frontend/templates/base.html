@@ -11,8 +11,12 @@
 </head>
 <body>
 	<header class="bg-primary text-white p-3 mb-4" style="position: relative;">
-		<div class="container" style="position: relative;">
-			<h1>Quiz4Fun</h1>
+		<div class="container d-flex align-items-center justify-content-between">
+			<h1 class="m-0">
+				<a href="{% url 'quizzes:quiz_list' %}" class="text-white text-decoration-none">
+					Quiz4Fun
+				</a>
+			</h1>
 			{% block quiz_header %}{% endblock %}
 		</div>
 	</header>
