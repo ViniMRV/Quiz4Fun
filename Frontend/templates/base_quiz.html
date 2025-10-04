@@ -3,21 +3,21 @@
 {% block head %}
     {{ block.super }}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{% static 'css/quizzes.css' %}">
 {% endblock %}
 
 {% block quiz_header %}
     {% if request.user.is_authenticated %}
-    <div style="position: absolute; top: -4px; right: -10px; z-index: 10;">
-        <div class="dropdown">
-            <button class="btn btn-primary rounded-circle" type="button" id="logoutMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="width:48px; height:48px; display:flex; align-items:center; justify-content:center; font-size:1.5em; border:2px solid #fff; box-sizing:border-box;">
-                <span class="bi bi-person"></span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="logoutMenuButton">
-                <li><a class="dropdown-item" href="{% url 'quizzes:create_quiz' %}">Criar Quiz</a></li>
-                <li><a class="dropdown-item" href="{% url 'quizzes:user_quizzes' %}">Meus Quizzes</a></li>
-                <li><a class="dropdown-item" href="{% url 'users:logout_user' %}">Logout</a></li>
-            </ul>
-        </div>
+    {% comment %} Adicione a classe "user-menu" e remova o div exterior {% endcomment %}
+    <div class="dropdown user-menu">
+        <button class="btn btn-primary rounded-circle" type="button" id="logoutMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="width:48px; height:48px; display:flex; align-items:center; justify-content:center; font-size:1.5em; border:2px solid #fff; box-sizing:border-box;">
+            <span class="bi bi-person"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="logoutMenuButton">
+            <li><a class="dropdown-item" href="{% url 'quizzes:create_quiz' %}">Criar Quiz</a></li>
+            <li><a class="dropdown-item" href="{% url 'quizzes:user_quizzes' %}">Meus Quizzes</a></li>
+            <li><a class="dropdown-item" href="{% url 'users:logout_user' %}">Logout</a></li>
+        </ul>
     </div>
     {% endif %}
 {% endblock %}

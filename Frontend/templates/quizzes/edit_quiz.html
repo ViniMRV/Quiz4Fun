@@ -3,23 +3,24 @@
 {% load dict_extras %}
 {% block title %}Editar Quiz - Quiz4Fun{% endblock %}
 {% block head %}
+    <link rel="stylesheet" href="{% static 'css/quizzes.css' %}">
     {{ block.super }}
 {% endblock %}
 {% block quiz_content %}
-<h2>Edit Quiz "{{ quiz.title }}"</h2>
-<form method="post" enctype="multipart/form-data">
+<h2 class="page-title">Editar Quiz "{{ quiz.title }}"</h2>
+<form method="post" enctype="multipart/form-data" class="setup-container">
     {% csrf_token %}
     {% for q in questions_with_options %}
-        <fieldset>
-            <legend>Question {{ forloop.counter }}</legend>
+        <fieldset class="question-setup">
+            <legend>Pergunta {{ forloop.counter }}</legend>
             {{ q.q_form.as_p }}
 
-            <h4>Options:</h4>
+            <h4>Opções:</h4>
             {% for opt in q.options %}
-                <div>
+                <div class="option">
                     {{ opt.as_p }}
                     {% for result in results %}
-                        <label>Points for result "{{ result.name }}":</label>
+                        <label> Pontos para resultado "{{ result.name }}": </label>
                         <input type="number"
                                name="opt{{ opt.instance.id }}_points_{{ result.id }}"
                                value="{{ scores_map|get_item:opt.instance.id|get_item:result.id|default:0 }}"
@@ -29,6 +30,6 @@
             {% endfor %}
         </fieldset>
     {% endfor %}
-    <button type="submit">Save Changes</button>
+    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
 </form>
 {% endblock %}

@@ -72,3 +72,143 @@ button {
     border-radius: 8px;
     padding: 10px 18px;
 }
+
+/* Layout grid para quizzes */
+.quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Cartão do quiz */
+.quiz-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    background: #f9f9f9;
+    transition: 0.2s;
+}
+
+.quiz-card:hover {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Imagem do quiz */
+.quiz-image {
+    width: 100%;
+    max-height: 90em;
+    max-width: 160em;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Botões */
+.btn {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 500;
+    margin-right: 5px;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.btn-warning {
+    background: #ffc107;
+    color: black;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.inline-form {
+    display: inline;
+}
+
+/* Ações dos quizzes */
+.quiz-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;   /* Espaçamento automático entre botões */
+    flex-wrap: wrap; /* Caso os botões quebrem em telas menores */
+}
+
+.quiz-actions .btn {
+    margin: 0; /* Remove margem antiga */
+}
+
+
+.main-header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 10px 20px; 
+    background-color: #007bff; 
+}
+
+
+.user-menu {
+    margin-left: auto; 
+}
+
+/* --- Estilos para a Página de Responder Quiz --- */
+
+/* Imagem da pergunta */
+.question-image-take {
+    max-width: 300px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Container de cada opção individual */
+.option-item {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.option-item:hover {
+    background-color: #f1f5ff;
+}
+
+/* Transforma a label em um container flexível para alinhar o rádio com o conteúdo */
+.option-label {
+    display: flex;
+    align-items: flex-start; /* Alinha no topo */
+    cursor: pointer;
+    width: 100%;
+}
+
+/* Estiliza o botão de rádio para ser maior e ter mais espaço */
+.option-label input[type="radio"] {
+    margin-top: 3px;
+    margin-right: 15px;
+    /* Aumenta o tamanho do botão de rádio */
+    transform: scale(1.5);
+}
+
+/* Container para o texto e a imagem da opção */
+.option-content {
+    display: flex;
+    flex-direction: column; /* Coloca o texto em cima da imagem */
+    width: 100%;
+}
+
+/* Imagem da opção */
+.option-image-take {
+    max-width: 200px; /* Define um tamanho máximo para a imagem */
+    border-radius: 8px;
+    margin-top: 10px; /* Adiciona um espaço entre o texto e a imagem */
+}

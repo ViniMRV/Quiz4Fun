@@ -4,7 +4,7 @@
 {% block title %}Meus Quizzes - Quiz4Fun{% endblock %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/quizzes.css' %}">
     {{ block.super }}
 {% endblock %}
 
@@ -19,27 +19,19 @@
             <h3>{{ quiz.title }}</h3>
             <p>{{ quiz.description|truncatewords:25 }}</p>
 
-            <div style="margin-top: 10px;">
-                <a href="{% url 'quizzes:take_quiz' quiz.id %}" 
-                   style="display: inline-block; padding: 8px 12px; background: #007bff; color: white; border-radius: 5px; text-decoration: none;">
-                   Fazer Quiz
-                </a>
+            <div class="quiz-actions">
+                <a href="{% url 'quizzes:take_quiz' quiz.id %}" class="btn btn-primary">Fazer Quiz</a>
+                <a href="{% url 'quizzes:edit_quiz' quiz.id %}" class="btn btn-warning">Editar</a>
 
-                <a href="{% url 'quizzes:edit_quiz' quiz.id %}"
-                    style="padding: 8px 12px; background: #ffc107; color: black; border-radius: 5px; text-decoration: none;">
-                    Editar
-                </a>
-
-                <!-- Delete button -->
-                <form method="post" action="{% url 'quizzes:delete_quiz' quiz.id %}" style="display:inline;">
+                <form method="post" action="{% url 'quizzes:delete_quiz' quiz.id %}" class="inline-form">
                     {% csrf_token %}
-                    <button type="submit" 
-                            style="padding: 8px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;"
+                    <button type="submit" class="btn btn-danger"
                             onclick="return confirm('Tem certeza que deseja deletar este quiz?');">
                         Deletar
                     </button>
                 </form>
             </div>
+
         </div>
     {% empty %}
         <p>Você ainda não criou nenhum quiz.</p>

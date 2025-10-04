@@ -10,22 +10,33 @@
 <form method="post">
     {% csrf_token %}
     {% for question in questions %}
-        <fieldset>
+        <fieldset class="question-card">
             <legend>{{ question.text }}</legend>
             {% if question.question_image %}
-                <img src="{{ question.question_image.url }}" alt="Question Image" style="max-width:200px">
+                <img src="{{ question.question_image.url }}" alt="Question Image" class="question-image-take">
             {% endif %}
-            {% for option in question.options.all %}
-                <label>
-                    <input type="radio" name="question_{{ question.id }}" value="{{ option.id }}" required>
-                    {{ option.text }}
-                    {% if option.option_image %}
-                        <img src="{{ option.option_image.url }}" alt="Option Image" style="max-width:100px">
-                    {% endif %}
-                </label><br>
-            {% endfor %}
+
+            {% comment %} === INÍCIO DA SEÇÃO MODIFICADA === {% endcomment %}
+            <div class="options-list">
+                {% for option in question.options.all %}
+                    <div class="option-item">
+                        <label class="option-label">
+                            <input type="radio" name="question_{{ question.id }}" value="{{ option.id }}" required>
+                            
+                            <div class="option-content">
+                                <span>{{ option.text }}</span>
+                                {% if option.option_image %}
+                                    <img src="{{ option.option_image.url }}" alt="Option Image" class="option-image-take">
+                                {% endif %}
+                            </div>
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+            {% comment %} === FIM DA SEÇÃO MODIFICADA === {% endcomment %}
+
         </fieldset>
     {% endfor %}
-    <button type="submit">Submit Quiz</button>
-</form>
+    <button type="submit" class="btn btn-primary">Enviar Quiz</button>
+</form
 {% endblock %}
