@@ -6,8 +6,7 @@ Quiz4Fun é uma aplicação web desenvolvida para criação e compartilhamento d
 
 ## 👥 Criadores
 - **Vinícius Machado da Rocha Viana** – Matrícula: 2111343  
-- **Filipe Rosgenfisch Quintans** – Matrícula: [inserir]
-
+- **Filipe Rogenfisch Quintans** – Matrícula: 2020857
 ---
 
 ## 📖 Descrição do Projeto
@@ -44,3 +43,18 @@ A aplicação permite:
 
 ---
 ## Como usar
+- **Ambiente virtual**:
+`python -m venv venv
+- **Ativar o venv**:
+`source venv/bin/activate
+- **Instalar as dependencias**: (no diretorio base)
+`pip install -r requirements.txt
+- **Entrar no diretorio pra rodar o programa**:
+`cd Backend/Quiz4FunProject
+- **Rodar o programa**:
+`python manage.py makemigrations
+`python manage.py migrate
+`python manage.py runserver
+
+- **Criar uma conta**:
+  
