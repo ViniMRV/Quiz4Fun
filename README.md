@@ -51,11 +51,11 @@ python -m venv venv
 ```bash
 source venv/bin/activate
 ```
-- **Instalar as dependencias**: (no diretorio base)
+- **Instalar as dependências**: (no diretorio base)
 ```bash
 pip install -r requirements.txt
 ```
-- **Entrar no diretorio pra rodar o programa**:
+- **Entrar no diretório pra rodar o programa**:
 ```bash
 cd Backend/Quiz4FunProject
 ```
@@ -65,4 +65,11 @@ python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
 ```
-- **Criar uma conta**:
+
+## Cadastro
+- Completar as colunas com os seus dados
+- Confirmar a criação da conta pelo link enviado ao email cadastrado
+- Fazer o login 
+
+## Criação de quiz
+Após o login o usuario tem a opção de criar um novo quiz ou ver os quizzes que ele ja tenha criado anteriormente.
