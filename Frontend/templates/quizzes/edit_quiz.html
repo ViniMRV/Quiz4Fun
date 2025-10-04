@@ -1,0 +1,34 @@
+{% extends 'base_quiz.html' %}
+{% load static %}
+{% load dict_extras %}
+{% block title %}Editar Quiz - Quiz4Fun{% endblock %}
+{% block head %}
+    {{ block.super }}
+{% endblock %}
+{% block quiz_content %}
+<h2>Edit Quiz "{{ quiz.title }}"</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for q in questions_with_options %}
+        <fieldset>
+            <legend>Question {{ forloop.counter }}</legend>
+            {{ q.q_form.as_p }}
+
+            <h4>Options:</h4>
+            {% for opt in q.options %}
+                <div>
+                    {{ opt.as_p }}
+                    {% for result in results %}
+                        <label>Points for result "{{ result.name }}":</label>
+                        <input type="number"
+                               name="opt{{ opt.instance.id }}_points_{{ result.id }}"
+                               value="{{ scores_map|get_item:opt.instance.id|get_item:result.id|default:0 }}"
+                               min="0">
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </fieldset>
+    {% endfor %}
+    <button type="submit">Save Changes</button>
+</form>
+{% endblock %}

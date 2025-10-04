@@ -7,6 +7,7 @@ from django.forms import modelform_factory
 from Users.models import UserQuizResult
 from django.utils.decorators import method_decorator
 from django.views import View
+from collections import defaultdict
 
 @method_decorator(login_required(login_url='/users/login/'), name='dispatch')
 class UserQuizzesView(View):
@@ -332,4 +333,68 @@ class DeleteQuizView(View):
     def post(self, request, quiz_id, *args, **kwargs):
         quiz = get_object_or_404(Quiz, id=quiz_id, created_by=request.user)
         quiz.delete()
+        return redirect('quizzes:user_quizzes')
+
+@method_decorator(login_required(login_url='/users/login/'), name='dispatch')
+class EditQuizView(View):
+    """
+    Permite ao usuário editar perguntas, opções e pontuação de um quiz já criado.
+    Não altera número de perguntas nem de resultados.
+    """
+    def get(self, request, quiz_id, *args, **kwargs):
+        quiz = get_object_or_404(Quiz, id=quiz_id, created_by=request.user)
+
+        QuestionForm = modelform_factory(Question, fields=['text', 'question_image'])
+        OptionForm = modelform_factory(Option, fields=['text', 'option_image'])
+
+        questions_with_options = []
+        scores_map = defaultdict(dict)
+
+        for question in quiz.questions.all():
+            q_form = QuestionForm(instance=question, prefix=f'q{question.id}')
+            options = [
+                OptionForm(instance=option, prefix=f'opt{option.id}')
+                for option in question.options.all()
+            ]
+            for option in question.options.all():
+                for score in option.scores.all():
+                    scores_map[option.id][score.result.id] = score.points
+
+            questions_with_options.append({
+                'question': question,
+                'q_form': q_form,
+                'options': options,
+            })
+
+        return render(request, 'quizzes/edit_quiz.html', {
+            'quiz': quiz,
+            'questions_with_options': questions_with_options,
+            'results': quiz.results.all(),
+            'scores_map': scores_map
+        })
+
+    def post(self, request, quiz_id, *args, **kwargs):
+        quiz = get_object_or_404(Quiz, id=quiz_id, created_by=request.user)
+
+        QuestionForm = modelform_factory(Question, fields=['text', 'question_image'])
+        OptionForm = modelform_factory(Option, fields=['text', 'option_image'])
+
+        for question in quiz.questions.all():
+            q_form = QuestionForm(request.POST, request.FILES, instance=question, prefix=f'q{question.id}')
+            if q_form.is_valid():
+                q_form.save()
+
+            for option in question.options.all():
+                o_form = OptionForm(request.POST, request.FILES, instance=option, prefix=f'opt{option.id}')
+                if o_form.is_valid():
+                    option = o_form.save()
+
+                # update scores
+                for result in quiz.results.all():
+                    field_name = f'opt{option.id}_points_{result.id}'
+                    points = int(request.POST.get(field_name, 0))
+                    score, created = OptionScore.objects.get_or_create(option=option, result=result)
+                    score.points = points
+                    score.save()
+
         return redirect('quizzes:user_quizzes')

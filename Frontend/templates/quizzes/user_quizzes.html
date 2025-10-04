@@ -25,6 +25,11 @@
                    Fazer Quiz
                 </a>
 
+                <a href="{% url 'quizzes:edit_quiz' quiz.id %}"
+                    style="padding: 8px 12px; background: #ffc107; color: black; border-radius: 5px; text-decoration: none;">
+                    Editar
+                </a>
+
                 <!-- Delete button -->
                 <form method="post" action="{% url 'quizzes:delete_quiz' quiz.id %}" style="display:inline;">
                     {% csrf_token %}
