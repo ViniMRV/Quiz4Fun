@@ -5,29 +5,34 @@ from django.shortcuts import get_object_or_404
 from .models import *
 from django.forms import modelform_factory
 from Users.models import UserQuizResult
+from django.utils.decorators import method_decorator
+from django.views import View
 
-@login_required(login_url='/users/login/')
-def user_quizzes(request):
+@method_decorator(login_required(login_url='/users/login/'), name='dispatch')
+class UserQuizzesView(View):
     """
     Exibe os quizzes do usuário logado.
 
     :param request: HttpRequest com usuário autenticado.
     :return: HttpResponse com a lista de quizzes.
     """
-    quizzes = request.user.quizzes.all()
-    return render(request, 'quizzes/quiz_list.html', {'quizzes': quizzes})
-@login_required(login_url='/users/login/')
-def quiz_menu(request):
+    def get(self, request, *args, **kwargs):
+        quizzes = request.user.quizzes.all()
+        return render(request, 'quizzes/quiz_list.html', {'quizzes': quizzes})
+
+@method_decorator(login_required(login_url='/users/login/'), name='dispatch')
+class QuizMenuView(View):
     """
     Exibe o menu principal de quizzes.
 
     :param request: HttpRequest com usuário autenticado.
     :return: HttpResponse com o menu de quizzes.
     """
-    return render(request, 'quizzes/quiz_menu.html')
+    def get(self, request, *args, **kwargs):
+        return render(request, 'quizzes/quiz_menu.html')
 
-@login_required(login_url='/users/login/')
-def create_quiz(request):
+@method_decorator(login_required(login_url='/users/login/'), name='dispatch')
+class CreateQuizView(View):
     """
     Lida com a criação de um novo quiz. 
     Se for uma requisição POST, valida e salva o formulário, vinculando o quiz ao usuário logado.
@@ -38,19 +43,21 @@ def create_quiz(request):
     :return: HttpResponse com o formulário renderizado ou HttpResponseRedirect para a configuração do quiz.
     :rtype: django.http.HttpResponse ou django.http.HttpResponseRedirect
     """
-    if request.method == 'POST':
+    def get(self, request, *args, **kwargs):
+        form = QuizForm()
+        return render(request, 'quizzes/create_quiz.html', {'form': form})
+
+    def post(self, request, *args, **kwargs):
         form = QuizForm(request.POST, request.FILES)
         if form.is_valid():
             quiz = form.save(commit=False)
             quiz.created_by = request.user
             quiz.save()
             return redirect('quizzes:quiz_setup', quiz_id=quiz.id)
-    else:
-        form = QuizForm()
-    return render(request, 'quizzes/create_quiz.html', {'form': form})
+        return render(request, 'quizzes/create_quiz.html', {'form': form})
 
-@login_required(login_url='/users/login/')
-def quiz_setup(request, quiz_id):
+@method_decorator(login_required(login_url='/users/login/'), name='dispatch')
+class QuizSetupView(View):
     """
     Lida com a configuração de perguntas e resultados de um quiz.
     Se for uma requisição POST, processa os dados do formulário e salva a configuração.
@@ -63,14 +70,19 @@ def quiz_setup(request, quiz_id):
     :return: HttpResponse com o formulário renderizado ou HttpResponseRedirect para adicionar resultados.
     :rtype: django.http.HttpResponse ou django.http.HttpResponseRedirect
     """
-    quiz = get_object_or_404(Quiz, id=quiz_id, created_by=request.user)
+    def get(self, request, quiz_id, *args, **kwargs):
+        quiz = get_object_or_404(Quiz, id=quiz_id, created_by=request.user)
+        return render(request, 'quizzes/quiz_setup.html', {
+            'quiz': quiz,
+            'show_questions_setup': False,
+        })
 
-    if request.method == 'POST':
+    def post(self, request, quiz_id, *args, **kwargs):
+        quiz = get_object_or_404(Quiz, id=quiz_id, created_by=request.user)
+
         if 'set_questions' in request.POST:
-            # First submission: user sets the number of questions & results
             num_questions = int(request.POST.get('num_questions', 1))
             num_results = int(request.POST.get('num_results', 2))
-            # Build a list for the template
             question_range = range(num_questions)
 
             return render(request, 'quizzes/quiz_setup.html', {
@@ -81,7 +93,6 @@ def quiz_setup(request, quiz_id):
                 'show_questions_setup': True,
             })
         else:
-            # Second submission: user filled per-question settings
             num_questions = int(request.POST.get('num_questions', 1))
             num_results = int(request.POST.get('num_results', 2))
 
@@ -102,14 +113,8 @@ def quiz_setup(request, quiz_id):
 
             return redirect('quizzes:add_results', quiz_id=quiz.id)
 
-    # GET request or default rendering
-    return render(request, 'quizzes/quiz_setup.html', {
-        'quiz': quiz,
-        'show_questions_setup': False,
-    })
-
-@login_required(login_url='/users/login/')
-def add_results(request, quiz_id):
+@method_decorator(login_required(login_url='/users/login/'), name='dispatch')
+class AddResultsView(View):
     """
     Lida com a adição de resultados ao quiz.
     Se for uma requisição POST, valida e salva os resultados, redirecionando para adicionar perguntas.
@@ -122,13 +127,21 @@ def add_results(request, quiz_id):
     :return: HttpResponse com o formulário renderizado ou HttpResponseRedirect para adicionar perguntas.
     :rtype: django.http.HttpResponse ou django.http.HttpResponseRedirect
     """
-    quiz = get_object_or_404(Quiz, id=quiz_id, created_by=request.user)
-    setup = request.session.get(f'quiz_{quiz_id}_setup')
-    num_results = setup.get('num_results', 2)
+    def get(self, request, quiz_id, *args, **kwargs):
+        quiz = get_object_or_404(Quiz, id=quiz_id, created_by=request.user)
+        setup = request.session.get(f'quiz_{quiz_id}_setup')
+        num_results = setup.get('num_results', 2)
 
-    ResultForm = modelform_factory(Result, fields=['name', 'description', 'result_image'])
+        ResultForm = modelform_factory(Result, fields=['name', 'description', 'result_image'])
+        forms = [ResultForm(prefix=str(i)) for i in range(num_results)]
+        return render(request, 'quizzes/add_results.html', {'quiz': quiz, 'forms': forms})
 
-    if request.method == 'POST':
+    def post(self, request, quiz_id, *args, **kwargs):
+        quiz = get_object_or_404(Quiz, id=quiz_id, created_by=request.user)
+        setup = request.session.get(f'quiz_{quiz_id}_setup')
+        num_results = setup.get('num_results', 2)
+
+        ResultForm = modelform_factory(Result, fields=['name', 'description', 'result_image'])
         forms = [ResultForm(request.POST, request.FILES, prefix=str(i)) for i in range(num_results)]
         if all(f.is_valid() for f in forms):
             for f in forms:
@@ -136,13 +149,11 @@ def add_results(request, quiz_id):
                 result.quiz = quiz
                 result.save()
             return redirect('quizzes:add_questions', quiz_id=quiz.id)
-    else:
-        forms = [ResultForm(prefix=str(i)) for i in range(num_results)]
 
-    return render(request, 'quizzes/add_results.html', {'quiz': quiz, 'forms': forms})
+        return render(request, 'quizzes/add_results.html', {'quiz': quiz, 'forms': forms})
 
-@login_required(login_url='/users/login/')
-def add_questions(request, quiz_id):
+@method_decorator(login_required(login_url='/users/login/'), name='dispatch')
+class AddQuestionsView(View):
     """
     Lida com a adição de perguntas e opções ao quiz.
     Se for uma requisição POST, valida e salva perguntas, opções e pontuações, finalizando a criação do quiz.
@@ -155,26 +166,49 @@ def add_questions(request, quiz_id):
     :return: HttpResponse com o formulário renderizado ou HttpResponseRedirect para finalizar o quiz.
     :rtype: django.http.HttpResponse ou django.http.HttpResponseRedirect
     """
-    quiz = get_object_or_404(Quiz, id=quiz_id, created_by=request.user)
-    setup = request.session.get(f'quiz_{quiz_id}_setup')
+    def get(self, request, quiz_id, *args, **kwargs):
+        quiz = get_object_or_404(Quiz, id=quiz_id, created_by=request.user)
+        setup = request.session.get(f'quiz_{quiz_id}_setup')
 
-    if not setup:
-        return redirect('quizzes:quiz_setup', quiz_id=quiz.id)
+        if not setup:
+            return redirect('quizzes:quiz_setup', quiz_id=quiz.id)
 
-    questions_setup = setup.get('questions_setup', [])
+        questions_setup = setup.get('questions_setup', [])
+        QuestionForm = modelform_factory(Question, fields=['text', 'question_image'])
 
-    QuestionForm = modelform_factory(Question, fields=['text', 'question_image'])
+        questions_with_options = []
+        for q_idx, q_setup in enumerate(questions_setup):
+            q_form = QuestionForm(prefix=f'q{q_idx}')
+            fields = ['text']
+            if q_setup.get('options_have_images', False):
+                fields.append('option_image')
+            OptionForm = modelform_factory(Option, fields=fields)
+            options = [OptionForm(prefix=f'q{q_idx}_opt{o_idx}') for o_idx in range(q_setup.get('num_options', 2))]
+            questions_with_options.append({
+                'q_form': q_form,
+                'options': options
+            })
 
-    # Prepare OptionForm per question depending on image requirement
-    option_forms_per_question = []
-    for q_setup in questions_setup:
-        fields = ['text']
-        if q_setup.get('options_have_images', False):
-            fields.append('option_image')
-        OptionForm = modelform_factory(Option, fields=fields)
-        option_forms_per_question.append(OptionForm)
+        return render(request, 'quizzes/add_questions.html', {
+            'quiz': quiz,
+            'questions_with_options': questions_with_options,
+            'results': quiz.results.all()
+        })
 
-    if request.method == 'POST':
+    def post(self, request, quiz_id, *args, **kwargs):
+        quiz = get_object_or_404(Quiz, id=quiz_id, created_by=request.user)
+        setup = request.session.get(f'quiz_{quiz_id}_setup')
+        questions_setup = setup.get('questions_setup', [])
+
+        QuestionForm = modelform_factory(Question, fields=['text', 'question_image'])
+        option_forms_per_question = []
+        for q_setup in questions_setup:
+            fields = ['text']
+            if q_setup.get('options_have_images', False):
+                fields.append('option_image')
+            OptionForm = modelform_factory(Option, fields=fields)
+            option_forms_per_question.append(OptionForm)
+
         for q_idx, q_setup in enumerate(questions_setup):
             q_form = QuestionForm(request.POST, request.FILES, prefix=f'q{q_idx}')
             OptionForm = option_forms_per_question[q_idx]
@@ -193,33 +227,14 @@ def add_questions(request, quiz_id):
                     option.question = question
                     option.save()
 
-                    # Save points for each result
                     for result in quiz.results.all():
                         points = int(request.POST.get(f'q{q_idx}_opt{o_idx}_points_{result.id}', 0))
                         OptionScore.objects.create(option=option, result=result, points=points)
 
-        return redirect('users:user_status')  # finish quiz creation
+        return redirect('quizzes:user_quizzes')
 
-    else:
-        # Prepare questions with their options for the template
-        questions_with_options = []
-        for q_idx, q_setup in enumerate(questions_setup):
-            q_form = QuestionForm(prefix=f'q{q_idx}')
-            OptionForm = option_forms_per_question[q_idx]
-            options = [OptionForm(prefix=f'q{q_idx}_opt{o_idx}') for o_idx in range(q_setup.get('num_options', 2))]
-            questions_with_options.append({
-                'q_form': q_form,
-                'options': options
-            })
-
-    return render(request, 'quizzes/add_questions.html', {
-        'quiz': quiz,
-        'questions_with_options': questions_with_options,
-        'results': quiz.results.all()
-    })
-
-@login_required(login_url='/users/login/')
-def take_quiz(request, quiz_id):
+@method_decorator(login_required(login_url='/users/login/'), name='dispatch')
+class TakeQuizView(View):
     """
     Lida com a participação do usuário em um quiz.
     Se for uma requisição POST, calcula o resultado e salva a resposta do usuário, redirecionando para a página de resultado.
@@ -232,45 +247,35 @@ def take_quiz(request, quiz_id):
     :return: HttpResponse com o formulário renderizado ou HttpResponseRedirect para o resultado.
     :rtype: django.http.HttpResponse ou django.http.HttpResponseRedirect
     """
-    quiz = get_object_or_404(Quiz, id=quiz_id)
+    def get(self, request, quiz_id, *args, **kwargs):
+        quiz = get_object_or_404(Quiz, id=quiz_id)
+        existing_result = UserQuizResult.objects.filter(user=request.user, quiz=quiz).first()
+        if existing_result:
+            return redirect('quizzes:quiz_result', quiz_id=quiz.id)
 
-    # Check if user already took this quiz
-    existing_result = UserQuizResult.objects.filter(user=request.user, quiz=quiz).first()
-    if existing_result:
-        return redirect('quizzes:quiz_result', quiz_id=quiz.id)
+        return render(request, 'quizzes/take_quiz.html', {
+            'quiz': quiz,
+            'questions': quiz.questions.all(),
+        })
 
-    if request.method == 'POST':
-        # Collect answers
-        selected_options = []
-        for question in quiz.questions.all():
-            option_id = request.POST.get(f'question_{question.id}')
-            if option_id:
-                selected_options.append(int(option_id))
+    def post(self, request, quiz_id, *args, **kwargs):
+        quiz = get_object_or_404(Quiz, id=quiz_id)
+        selected_options = [int(request.POST.get(f'question_{q.id}')) for q in quiz.questions.all() if request.POST.get(f'question_{q.id}')]
 
-        # Calculate scores
         result_scores = {r.id: 0 for r in quiz.results.all()}
         for option_id in selected_options:
             option = Option.objects.get(id=option_id)
             for score in option.scores.all():
                 result_scores[score.result.id] += score.points
 
-        # Pick top result
         best_result_id = max(result_scores, key=result_scores.get)
         best_result = Result.objects.get(id=best_result_id)
 
-        # Save user result
         UserQuizResult.objects.create(user=request.user, quiz=quiz, result=best_result)
-
         return redirect('quizzes:quiz_result', quiz_id=quiz.id)
 
-    return render(request, 'quizzes/take_quiz.html', {
-        'quiz': quiz,
-        'questions': quiz.questions.all(),
-    })
-
-
-@login_required(login_url='/users/login/')
-def quiz_result(request, quiz_id):
+@method_decorator(login_required(login_url='/users/login/'), name='dispatch')
+class QuizResultView(View):
     """
     Exibe o resultado do quiz para o usuário logado.
     Renderiza a página de resultado do quiz para o usuário.
@@ -282,15 +287,20 @@ def quiz_result(request, quiz_id):
     :return: HttpResponse com o resultado do quiz.
     :rtype: django.http.HttpResponse
     """
-    quiz = get_object_or_404(Quiz, id=quiz_id)
-    user_result = get_object_or_404(UserQuizResult, user=request.user, quiz=quiz)
+    def get(self, request, quiz_id, *args, **kwargs):
+        quiz = get_object_or_404(Quiz, id=quiz_id)
+        user_result = get_object_or_404(UserQuizResult, user=request.user, quiz=quiz)
 
-    return render(request, 'quizzes/quiz_result.html', {
-        'quiz': quiz,
-        'user_result': user_result,
-    })
+        return render(request, 'quizzes/quiz_result.html', {
+            'quiz': quiz,
+            'user_result': user_result,
+        })
 
-@login_required(login_url='/users/login/')
-def quiz_list(request):
-    quizzes = Quiz.objects.all().select_related("created_by")
-    return render(request, "quizzes/quiz_list.html", {"quizzes": quizzes})
+@method_decorator(login_required(login_url='/users/login/'), name='dispatch')
+class QuizListView(View):
+    """
+    Exibe a lista de todos os quizzes disponíveis.
+    """
+    def get(self, request, *args, **kwargs):
+        quizzes = Quiz.objects.all().select_related("created_by")
+        return render(request, "quizzes/quiz_list.html", {"quizzes": quizzes})
