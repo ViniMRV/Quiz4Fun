@@ -69,7 +69,28 @@ python manage.py runserver
 ## Cadastro
 - Completar as colunas com os seus dados
 - Confirmar a criação da conta pelo link enviado ao email cadastrado
-- Fazer o login 
+- Fazer o login utilizando e-mail e senha
 
-## Criação de quiz
-Após o login o usuario tem a opção de criar um novo quiz ou ver os quizzes que ele ja tenha criado anteriormente.
+## Navegação Principal
+- **Página Inicial (Todos os Quizzes):** Exibe uma lista com todos os quizzes já criados por todos os usuários, permitindo descobrir novos desafios.
+- **Acessando a Página Inicial:** Clique no logo **"Quiz4Fun"** no canto superior esquerdo para retornar a qualquer momento.
+
+## Menu do Usuário
+Após o login, um ícone de perfil aparecerá no canto superior direito. Ao clicar nele, você terá acesso às seguintes opções:
+
+- **Criar Quiz:** Leva ao formulário de criação, onde é possível definir título, descrição, imagem de capa e adicionar perguntas com suas opções de resposta.
+- **Meus Quizzes:** Mostra apenas os quizzes que você criou, permitindo gerenciar facilmente.
+- **Logout:** Encerra a sessão e retorna à tela de login.
+
+## Gerenciando Seus Quizzes
+Na página **"Meus Quizzes"**, cada quiz terá um card com as seguintes ações:
+
+- **Fazer Quiz:** Permite que você ou outros usuários respondam ao quiz.
+- **Editar:** Abre o formulário de edição para alterar título, descrição, perguntas e opções do quiz.
+- **Deletar:** Remove o quiz permanentemente, com mensagem de confirmação para evitar exclusões acidentais.
+
+## Respondendo a um Quiz
+- Clique em **"Fazer Quiz"** no card de qualquer quiz.
+- Selecione uma resposta para cada pergunta.
+- Clique em **"Enviar Quiz"** ao final.
+- Após o envio, você será redirecionado à página de resultados para visualizar sua pontuação.
