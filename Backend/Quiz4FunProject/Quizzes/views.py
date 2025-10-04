@@ -200,6 +200,7 @@ class AddQuestionsView(View):
         setup = request.session.get(f'quiz_{quiz_id}_setup')
         questions_setup = setup.get('questions_setup', [])
 
+        # Formulário de perguntas
         QuestionForm = modelform_factory(Question, fields=['text', 'question_image'])
         option_forms_per_question = []
         for q_setup in questions_setup:
@@ -209,6 +210,7 @@ class AddQuestionsView(View):
             OptionForm = modelform_factory(Option, fields=fields)
             option_forms_per_question.append(OptionForm)
 
+        # Itera pelas perguntas configuradas
         for q_idx, q_setup in enumerate(questions_setup):
             q_form = QuestionForm(request.POST, request.FILES, prefix=f'q{q_idx}')
             OptionForm = option_forms_per_question[q_idx]
@@ -217,19 +219,36 @@ class AddQuestionsView(View):
                 for o_idx in range(q_setup.get('num_options', 2))
             ]
 
-            if q_form.is_valid() and all(of.is_valid() for of in option_forms):
-                question = q_form.save(commit=False)
-                question.quiz = quiz
-                question.save()
-
+            # Verifica se os formulários são válidos
+            if not (q_form.is_valid() and all(of.is_valid() for of in option_forms)):
+                print(f"[ERRO] Questão {q_idx} inválida:")
+                print("Erros da questão:", q_form.errors)
                 for o_idx, of in enumerate(option_forms):
-                    option = of.save(commit=False)
-                    option.question = question
-                    option.save()
+                    if of.errors:
+                        print(f"Erros da opção {o_idx}:", of.errors)
+                continue  # Pula só esta questão, segue para a próxima
 
-                    for result in quiz.results.all():
-                        points = int(request.POST.get(f'q{q_idx}_opt{o_idx}_points_{result.id}', 0))
-                        OptionScore.objects.create(option=option, result=result, points=points)
+            # Salva a questão
+            question = q_form.save(commit=False)
+            question.quiz = quiz
+            question.save()
+
+            # Salva as opções e suas pontuações
+            for o_idx, of in enumerate(option_forms):
+                option = of.save(commit=False)
+                option.question = question
+                option.save()
+
+                for result in quiz.results.all():
+                    key = f'q{q_idx}_opt{o_idx}_points_{result.id}'
+                    points = int(request.POST.get(key, 0))
+                    OptionScore.objects.create(option=option, result=result, points=points)
+
+        # Debug: imprime no console as pontuações salvas
+        print("Pontos salvos:")
+        for option in Option.objects.filter(question__quiz=quiz):
+            for score in option.scores.all():
+                print(option.text, score.result.name, score.points)
 
         return redirect('quizzes:user_quizzes')
 
