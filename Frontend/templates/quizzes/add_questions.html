@@ -11,15 +11,26 @@
     {% for question in questions_with_options %}
         <fieldset>
             <legend>Question {{ forloop.counter }}</legend>
+
             {{ question.q_form.as_p }}
+            {% if question.q_form.errors %}
+                <div class="text-danger">{{ question.q_form.errors }}</div>
+            {% endif %}
+
             <h4>Options:</h4>
             {% for opt_form in question.options %}
                 <div>
                     <strong>Option {{ forloop.counter }}:</strong>
                     {{ opt_form.as_p }}
+                    {% if opt_form.errors %}
+                        <div class="text-danger">{{ opt_form.errors }}</div>
+                    {% endif %}
+
                     {% for result in results %}
                         <label>Points for result "{{ result.name }}":</label>
-                        <input type="number" name="q{{ forloop.parentloop.counter0 }}_opt{{ forloop.counter0 }}_points_{{ result.id }}" value="0" min="0">
+                        <input type="number"
+                               name="q{{ forloop.parentloop.parentloop.counter0 }}_opt{{ forloop.parentloop.counter0 }}_points_{{ result.id }}"
+                               value="0" min="0">
                     {% endfor %}
                 </div>
             {% endfor %}
