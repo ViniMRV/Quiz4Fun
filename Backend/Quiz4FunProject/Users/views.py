@@ -63,16 +63,16 @@ def activate_user(request, token):
     :return: HttpResponseRedirect para login, com mensagem de sucesso ou erro.
     :rtype: django.http.HttpResponseRedirect
     """
-        try:
-            user = User.objects.get(activation_token=token)
-            user.is_active = True
-            user.activation_token = None
-            user.save()
-            messages.success(request, 'Conta ativada com sucesso! Você pode fazer login.')
-            return redirect('users:login_user')
-        except User.DoesNotExist:
-            messages.error(request, 'Token de ativação inválido ou expirado.')
-            return redirect('users:login_user')
+    try:
+        user = User.objects.get(activation_token=token)
+        user.is_active = True
+        user.activation_token = None
+        user.save()
+        messages.success(request, 'Conta ativada com sucesso! Você pode fazer login.')
+        return redirect('users:login_user')
+    except User.DoesNotExist:
+        messages.error(request, 'Token de ativação inválido ou expirado.')
+        return redirect('users:login_user')
 
 def login_user(request):
     """
