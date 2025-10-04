@@ -1,9 +1,12 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Carregar variáveis do .env
+load_dotenv(os.path.join(BASE_DIR.parent.parent, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -19,6 +22,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     ".github.dev",
+    "Quiz4FunApp.pythonanywhere.com"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -30,6 +34,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://*.github.dev",
     "https://improved-space-pancake-7v75jgjjx5r9hgjv-8000.app.github.dev",
     "http://improved-space-pancake-7v75jgjjx5r9hgjv-8000.app.github.dev",
+    "http://Quiz4FunApp.pythonanywhere.com",
+    "https://Quiz4FunApp.pythonanywhere.com"
 ]
 
 
@@ -38,7 +44,7 @@ AUTHENTICATION_BACKENDS = [
     'Users.auth.auth_backend.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
-SITE_DOMAIN = "https://solid-meme-pjjvxw5rr596cr6p7-8000.app.github.dev"
+SITE_DOMAIN = os.getenv('SITE_DOMAIN', 'http://localhost:8000')
 AUTH_USER_MODEL = 'Users.User'
 
 INSTALLED_APPS = [
@@ -141,9 +147,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# Carregar variáveis do .env
-load_dotenv(os.path.join(BASE_DIR.parent.parent, '.env'))
 
 EMAIL_HOST = os.getenv('EMAIL_HOST')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))

@@ -11,14 +11,13 @@ from django.views import View
 @method_decorator(login_required(login_url='/users/login/'), name='dispatch')
 class UserQuizzesView(View):
     """
-    Exibe os quizzes do usuário logado.
-
-    :param request: HttpRequest com usuário autenticado.
-    :return: HttpResponse com a lista de quizzes.
+    Exibe apenas os quizzes criados pelo usuário logado,
+    permitindo gerenciamento (como deletar).
     """
     def get(self, request, *args, **kwargs):
         quizzes = request.user.quizzes.all()
-        return render(request, 'quizzes/quiz_list.html', {'quizzes': quizzes})
+        return render(request, 'quizzes/user_quizzes.html', {'quizzes': quizzes})
+
 
 @method_decorator(login_required(login_url='/users/login/'), name='dispatch')
 class QuizMenuView(View):
@@ -323,3 +322,14 @@ class QuizListView(View):
     def get(self, request, *args, **kwargs):
         quizzes = Quiz.objects.all().select_related("created_by")
         return render(request, "quizzes/quiz_list.html", {"quizzes": quizzes})
+
+@method_decorator(login_required(login_url='/users/login/'), name='dispatch')
+class DeleteQuizView(View):
+    """
+    Exclui o Quiz, junto com suas perguntas, opções e resultados associados.
+    """
+
+    def post(self, request, quiz_id, *args, **kwargs):
+        quiz = get_object_or_404(Quiz, id=quiz_id, created_by=request.user)
+        quiz.delete()
+        return redirect('quizzes:user_quizzes')
