@@ -139,6 +139,7 @@ STATICFILES_DIRS = [
     BASE_DIR.parent.parent / "Frontend" / "static",
 ]
 
+STATIC_ROOT = BASE_DIR.parent.parent / "staticfiles"
 
 # Configuração para arquivos de mídia (imagens de perfil)
 MEDIA_URL = '/media/'
